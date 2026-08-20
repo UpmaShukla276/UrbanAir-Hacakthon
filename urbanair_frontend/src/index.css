@@ -1,0 +1,121 @@
+/* ============================================================
+   UrbanAir AI — Design Tokens
+   Direction: civic monitoring "control room" — not a marketing
+   page. Dark instrumentation base so severity colors (the real
+   information) read clearly, monospace for data/numerics to
+   feel measured rather than decorative.
+   ============================================================ */
+
+:root {
+  /* Base surfaces */
+  --bg-base: #0B0F14;
+  --bg-panel: #131920;
+  --bg-panel-raised: #1A2129;
+  --border-subtle: #232B35;
+  --border-strong: #333E4B;
+
+  /* Text */
+  --text-primary: #E7ECF2;
+  --text-secondary: #8B96A5;
+  --text-tertiary: #57626F;
+
+  /* Brand accent (interactive / selected states — distinct from AQI severity) */
+  --accent: #2DD9C0;
+  --accent-dim: #1B8C7A;
+  --accent-glow: rgba(45, 217, 192, 0.15);
+
+  /* AQI severity palette (functional, CPCB-aligned bands) */
+  --aqi-good: #00A65A;
+  --aqi-satisfactory: #8CC63F;
+  --aqi-moderate: #FFC107;
+  --aqi-poor: #FF7A00;
+  --aqi-very-poor: #D9534F;
+  --aqi-severe: #7B1F1F;
+
+  /* Type */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+button, select, input {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+/* Scrollbar (subtle, matches instrument-panel feel) */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-panel); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visibility (accessibility floor) */
+a:focus-visible, button:focus-visible, select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Live auto-refresh pulse indicator */
+@keyframes live-pulse {
+  0%   { box-shadow: 0 0 0 0 var(--accent-glow); }
+  70%  { box-shadow: 0 0 0 6px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.live-pulse-dot {
+  animation: live-pulse 2s ease-out infinite;
+}
+
+/* Highlighted refresh button used across Enforcement / Source Attribution /
+   Health Advisory / Green Cover so it reads as an active, working control
+   rather than a faded/disabled-looking one */
+.refresh-btn {
+  background: var(--accent-glow);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.refresh-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--bg-base);
+}
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

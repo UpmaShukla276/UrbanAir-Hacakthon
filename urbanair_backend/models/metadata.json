@@ -1,0 +1,49 @@
+{
+  "features": [
+    "co",
+    "no2",
+    "o3",
+    "pm10",
+    "pm25",
+    "so2",
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos",
+    "dow_sin",
+    "dow_cos",
+    "is_weekend",
+    "city_code",
+    "location_lat",
+    "location_lon",
+    "year"
+  ],
+  "best_regressor": "LightGBM",
+  "regression_metrics": {
+    "CatBoost": {
+      "R2": 0.9999414957152959,
+      "RMSE": 0.564583291983719,
+      "MAE": 0.3637921780549562
+    },
+    "LightGBM": {
+      "R2": 0.9999503965277156,
+      "RMSE": 0.5198645745237317,
+      "MAE": 0.2815952495576182
+    },
+    "RandomForest": {
+      "R2": 0.9999999796323195,
+      "RMSE": 0.010534282772461379,
+      "MAE": 0.003831229652437784
+    }
+  },
+  "classifier_accuracy": 0.998082410683712,
+  "cities": [
+    "Delhi",
+    "Faridabad",
+    "Ghaziabad",
+    "Gurgaon",
+    "Noida"
+  ],
+  "train_years": "2019-2022",
+  "test_years": "2023-2024"
+}

@@ -1,0 +1,64 @@
+{
+  "features": [
+    "aqi_lag_1h",
+    "aqi_lag_24h",
+    "aqi_lag_48h",
+    "aqi_lag_72h",
+    "aqi_lag_168h",
+    "aqi_roll_mean_24h",
+    "aqi_roll_std_24h",
+    "aqi_roll_mean_168h",
+    "aqi_roll_max_24h",
+    "aqi_trend_6h",
+    "pm25_lag_24h",
+    "pm25_roll_mean_24h",
+    "pm10_lag_24h",
+    "pm10_roll_mean_24h",
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos",
+    "dow_sin",
+    "dow_cos",
+    "is_weekend",
+    "city_code",
+    "location_lat",
+    "location_lon",
+    "year"
+  ],
+  "horizons": [
+    24,
+    48,
+    72
+  ],
+  "metrics": {
+    "24h": {
+      "R2": 0.679707109916144,
+      "RMSE": 41.860220246467186,
+      "MAE": 31.1944215116785,
+      "naive_baseline_MAE": 43.01500370580102
+    },
+    "48h": {
+      "R2": 0.6790791335751205,
+      "RMSE": 41.898215721082316,
+      "MAE": 31.21891137976075,
+      "naive_baseline_MAE": 42.8396654333816
+    },
+    "72h": {
+      "R2": 0.6778998790619701,
+      "RMSE": 41.98032924716493,
+      "MAE": 31.265783732093084,
+      "naive_baseline_MAE": 43.039036283704114
+    }
+  },
+  "cities": [
+    "Delhi",
+    "Faridabad",
+    "Ghaziabad",
+    "Gurgaon",
+    "Noida"
+  ],
+  "train_years": "2019-2022",
+  "test_years": "2023-2024",
+  "note": "Forecast models use only lag/rolling AQI history + pollutant lags + cyclic time features -- no same-timestamp pollutant readings, since those aren't known in advance in a real deployment."
+}

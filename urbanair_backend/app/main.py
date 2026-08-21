@@ -30,6 +30,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import source_attribution as sa
+import grap
 import green_cover as gc
 import live_history
 from . import alert_generator
@@ -562,6 +563,37 @@ def enforcement_intelligence():
         p["rank"] = i + 1
 
     return priorities
+
+#neewww codeeeeeee
+@app.get("/api/grap/{point}")
+def grap_status(point: str):
+    if point not in sa.CITY_COORDS:
+        raise HTTPException(404, f"Unknown point: {point}")
+    point_lat, point_lon = sa.CITY_COORDS[point]
+    city_for_aqi, _ = sa.nearest_known_city(point_lat, point_lon)
+
+    current = get_current(city_for_aqi)
+    fc = forecast(city_for_aqi)
+    fc_24h = next(f for f in fc["forecasts"] if f["horizon_hours"] == 24)
+
+    return grap.zone_grap_status(
+        point, current["aqi"], fc_24h["predicted_aqi"], fc["data_maturity"]["is_warming_up"]
+    )
+
+
+@app.get("/api/grap")
+def grap_status_all():
+    results = []
+    for point in sa.CITY_COORDS:
+        try:
+            results.append(grap_status(point))
+        except HTTPException:
+            continue
+    results.sort(
+        key=lambda r: (r["recommended_stage"]["stage"] if r["recommended_stage"] else 0),
+        reverse=True,
+    )
+    return results
 
 
 # CPCB-published health advisories per AQI band (National Air Quality Index).

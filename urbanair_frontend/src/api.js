@@ -25,6 +25,10 @@ export const api = {
   sourceAttribution: (point) => request(`/source-attribution/${encodeURIComponent(point)}`),
   sourceAttributionAll: () => request("/source-attribution"),
   enforcement: () => request("/enforcement"),
+  
+  grapAll: () => request("/grap"),
+  grapPoint: (point) => request(`/grap/${encodeURIComponent(point)}`),
+
   healthAdvisory: (city) => request(`/health-advisory/${encodeURIComponent(city)}`),
   healthAdvisoryAll: () => request("/health-advisory"),
   searchLocation: (query) => request(`/search-location?query=${encodeURIComponent(query)}`),

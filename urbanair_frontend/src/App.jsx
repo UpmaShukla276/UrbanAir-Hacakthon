@@ -7,6 +7,10 @@ import TrendChart from "./components/TrendChart";
 import SourceAttributionChart from "./components/SourceAttributionChart";
 import SourceAttributionCompare from "./components/SourceAttributionCompare";
 import EnforcementTable from "./components/EnforcementTable";
+
+import GrapPanel from "./components/GrapPanel";
+import GrapInfoPanel from "./components/GrapInfoPanel";
+
 import HealthAdvisoryPanel from "./components/HealthAdvisoryPanel";
 import HealthAdvisoryCompare from "./components/HealthAdvisoryCompare";
 import HealthAdvisoryInfoPanel from "./components/HealthAdvisoryInfoPanel";
@@ -22,6 +26,9 @@ const TABS = [
   { key: "overview", label: "Overview" },
   { key: "attribution", label: "Source Attribution" },
   { key: "enforcement", label: "Enforcement" },
+
+  { key: "grap", label: "GRAP Compliance" },
+
   { key: "health", label: "Health Advisory" },
   { key: "whatif", label: "What-if Simulation" },
   { key: "greencover", label: "Green Cover" },
@@ -49,6 +56,10 @@ export default function App() {
   const [whatifPoint, setWhatifPoint] = useState("Delhi");
   const [enforcementData, setEnforcementData] = useState(null);
   const [refreshingEnforcement, setRefreshingEnforcement] = useState(false);
+
+  const [grapData, setGrapData] = useState(null);
+  const [refreshingGrap, setRefreshingGrap] = useState(false);
+
   const [healthData, setHealthData] = useState(null);
   const [healthAllData, setHealthAllData] = useState(null);
   const [refreshingHealth, setRefreshingHealth] = useState(false);
@@ -126,6 +137,18 @@ export default function App() {
       .finally(() => setRefreshingEnforcement(false));
   }, []);
 
+
+
+  useEffect(() => {
+  api.grapAll().then(setGrapData).catch((e) => console.error(e));
+}, []);
+
+const refreshGrap = useCallback(() => {
+  setRefreshingGrap(true);
+  api.grapAll().then(setGrapData).catch((e) => console.error(e)).finally(() => setRefreshingGrap(false));
+}, []);
+
+
   // Load all-points attribution once, for the "compare" view
   useEffect(() => {
     api.sourceAttributionAll().then(setAttributionAllData).catch((e) => console.error(e));
@@ -162,6 +185,7 @@ export default function App() {
       api.enforcement().then(setEnforcementData).catch((e) => console.error(e));
       api.sourceAttributionAll().then(setAttributionAllData).catch((e) => console.error(e));
       api.healthAdvisoryAll().then(setHealthAllData).catch((e) => console.error(e));
+      api.grapAll().then(setGrapData).catch((e) => console.error(e));
     }, 60000);
     return () => clearInterval(interval);
   }, [loadCities, loadCityDetail, selectedCity]);
@@ -356,6 +380,18 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {activeTab === "grap" && (
+        <div style={{ flex: 1, padding: 20, overflowY: "auto" }}>
+          <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+            <div style={{ background: "var(--bg-panel)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: 20, flex: "1 1 auto", maxWidth: 700 }}>
+              <GrapPanel data={grapData} onRefresh={refreshGrap} refreshing={refreshingGrap} />
+            </div>
+            <GrapInfoPanel />
+          </div>
+        </div>
+      )}
+
 
       {activeTab === "health" && (
         <div style={{ flex: 1, padding: 20, overflowY: "auto" }}>

@@ -38,8 +38,25 @@ function FlyToLocation({ target }) {
   }, [target, map]);
   return null;
 }
+// --- Upwind Source Flagging helpers ---
+const COMPASS_POINTS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
 
-export default function MapView({ cityReadings, selectedCity, onSelectCity }) {
+function degToCompass(deg) {
+  return COMPASS_POINTS[Math.round(deg / 22.5) % 16];
+}
+
+function angleDiff(a, b) {
+  const d = Math.abs(a - b) % 360;
+  return Math.min(d, 360 - d);
+}
+
+// Punjab/Haryana stubble belt sits roughly NW of Delhi NCR -- same 315°
+// reference bearing the backend uses for its seasonal waste-burning heuristic.
+function isUpwindFromStubbleBelt(windDeg) {
+  return angleDiff(windDeg, 315) <= 45;
+}
+
+export default function MapView({ cityReadings, selectedCity, onSelectCity, windData }) {
   const [activeLayers, setActiveLayers] = useState({});
   const [layerData, setLayerData] = useState({});
   const [probePoint, setProbePoint] = useState(null); // { lat, lon, name? }
@@ -226,6 +243,60 @@ export default function MapView({ cityReadings, selectedCity, onSelectCity }) {
           Click anywhere on the map for a hyperlocal estimate
         </span>
       </div>
+            {/* Upwind Source Flagging -- live wind arrow + Regional Background callout */}
+      {windData && windData.raw_signals && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 12,
+            left: 12,
+            zIndex: 1000,
+            background: "var(--bg-panel)",
+            border: "1px solid var(--border-strong)",
+            borderRadius: "var(--radius-md)",
+            padding: "10px 12px",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            maxWidth: 260,
+          }}
+        >
+          <div
+            title={`Wind ${windData.raw_signals.wind_speed_mps} m/s from ${degToCompass(windData.raw_signals.wind_deg)}`}
+            style={{
+              width: 28,
+              height: 28,
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transform: `rotate(${(windData.raw_signals.wind_deg + 180) % 360}deg)`,
+              transition: "transform 0.4s ease",
+            }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2 L12 22 M12 2 L6 9 M12 2 L18 9" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: "var(--text-secondary)", lineHeight: 1.4 }}>
+            <div>
+              Wind currently from{" "}
+              <strong style={{ color: "var(--text-primary)" }}>{degToCompass(windData.raw_signals.wind_deg)}</strong>
+              {" "}· {windData.raw_signals.wind_speed_mps} m/s
+            </div>
+            <div style={{ marginTop: 3, color: "var(--text-tertiary)" }}>
+              {isUpwindFromStubbleBelt(windData.raw_signals.wind_deg) && windData.raw_signals.is_stubble_burning_season ? (
+                <>
+                  Regional Background ({windData.sources.background_pct}%) likely includes Punjab/Haryana
+                  stubble-burning contribution.
+                </>
+              ) : (
+                <>Regional Background is {windData.sources.background_pct}% of {windData.point}'s pollution right now.</>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -242,7 +242,7 @@ const refreshGrap = useCallback(() => {
         >
           {/* Map — main visual weight */}
           <div style={{ gridArea: "map" }}>
-            <MapView cityReadings={cityReadings} selectedCity={selectedCity} onSelectCity={setSelectedCity} />
+            <MapView cityReadings={cityReadings} selectedCity={selectedCity} onSelectCity={setSelectedCity} windData={attributionData} />
           </div>
 
           {/* Right panel: current AQI gauge + forecast */}

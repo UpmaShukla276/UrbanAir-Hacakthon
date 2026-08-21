@@ -1,28 +1,28 @@
 /* ============================================================
-   UrbanAir AI — Design Tokens
-   Direction: civic monitoring "control room" — not a marketing
-   page. Dark instrumentation base so severity colors (the real
-   information) read clearly, monospace for data/numerics to
-   feel measured rather than decorative.
-   ============================================================ */
+  UrbanAir AI — Design Tokens
+  Direction: civic monitoring "control room" — light instrumentation
+  base (white surfaces, dark text) so severity colors (the real
+  information) still read clearly, monospace for data/numerics to
+  feel measured rather than decorative.
+  ============================================================ */
 
 :root {
   /* Base surfaces */
-  --bg-base: #0B0F14;
-  --bg-panel: #131920;
-  --bg-panel-raised: #1A2129;
-  --border-subtle: #232B35;
-  --border-strong: #333E4B;
+  --bg-base: #F7F3DD;
+  --bg-panel: #FFFDF7;
+  --bg-panel-raised: #F4F0E1;
+  --border-subtle: #D7DEE6;
+  --border-strong: #AAB6C2;
 
   /* Text */
-  --text-primary: #E7ECF2;
-  --text-secondary: #8B96A5;
-  --text-tertiary: #57626F;
+  --text-primary: #16202B;
+  --text-secondary: #4A5A6A;
+  --text-tertiary: #8493A3;
 
   /* Brand accent (interactive / selected states — distinct from AQI severity) */
-  --accent: #2DD9C0;
-  --accent-dim: #1B8C7A;
-  --accent-glow: rgba(45, 217, 192, 0.15);
+  --accent: #0F9E8C;
+  --accent-dim: #0C7C6E;
+  --accent-glow: rgba(15, 158, 140, 0.12);
 
   /* AQI severity palette (functional, CPCB-aligned bands) */
   --aqi-good: #00A65A;

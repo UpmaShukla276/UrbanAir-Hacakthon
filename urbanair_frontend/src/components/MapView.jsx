@@ -85,11 +85,11 @@ export default function MapView({ cityReadings, selectedCity, onSelectCity }) {
       <MapContainer
         center={[28.6139, 77.209]}
         zoom={10}
-        style={{ height: "100%", width: "100%", background: "var(--bg-base)" }}
+        style={{ height: "100%", width: "100%", background: "#F7F3DD" }}
         zoomControl={true}
       >
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
           attribution='&copy; OpenStreetMap &copy; CARTO'
         />
 

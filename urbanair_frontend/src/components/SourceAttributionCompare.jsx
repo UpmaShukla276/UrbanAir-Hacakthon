@@ -2,11 +2,11 @@ import React from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from "recharts";
 
 const SOURCE_COLORS = {
-  traffic_pct: "#FF7A00",
+  traffic_pct: "#F59E0B",
   industrial_pct: "#D9534F",
   construction_pct: "#8B96A5",
   waste_burning_pct: "#FFC107",
-  background_pct: "#2DD9C0",
+  background_pct: "#0b7a99",
 };
 
 const SOURCE_LABELS = {
@@ -14,7 +14,7 @@ const SOURCE_LABELS = {
   industrial_pct: "Industrial",
   construction_pct: "Construction",
   waste_burning_pct: "Waste Burning",
-  background_pct: "Background",
+  background_pct: "Regional Background",
 };
 
 export default function SourceAttributionCompare({ data, onRefresh, refreshing }) {

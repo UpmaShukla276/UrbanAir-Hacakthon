@@ -1,29 +1,149 @@
-import React from "react";
+import React, { useState } from "react";
 
-function Section({ label, children, accentColor = "var(--accent)" }) {
+const QUESTIONS = [
+  {
+    label: "What this shows",
+    accentColor: "var(--accent)",
+    content: (
+      <>
+        For each of Delhi NCR's 21 monitored areas: what % of current
+        pollution is coming from <strong style={{ color: "var(--text-primary)" }}>Traffic</strong>,{" "}
+        <strong style={{ color: "var(--text-primary)" }}>Industrial</strong>,{" "}
+        <strong style={{ color: "var(--text-primary)" }}>Construction</strong>,{" "}
+        <strong style={{ color: "var(--text-primary)" }}>Waste/Stubble-Burning</strong>, and
+        non-local <strong style={{ color: "var(--text-primary)" }}>Regional Background</strong>.
+        "Compare all locations" stacks all 21 side-by-side so you can
+        spot which area's dominant source stands out.
+      </>
+    ),
+  },
+  {
+    label: "Why it's here",
+    accentColor: "var(--aqi-satisfactory)",
+    content: (
+      <>
+        Knowing the AQI number doesn't tell you what to *do* about it —
+        two areas at the same AQI can need completely different
+        responses (traffic curbs vs. industrial inspection vs.
+        cross-state stubble-burning coordination). This is the
+        reasoning layer that Enforcement and What-if Simulation both
+        build on top of.
+      </>
+    ),
+  },
+  {
+    label: "How it's calculated",
+    accentColor: "var(--accent-dim)",
+    content: (
+      <>
+        <div style={{ marginBottom: 10 }}>
+          <strong style={{ color: "var(--text-primary)" }}>Traffic</strong> — live congestion
+          (TomTom). <strong style={{ color: "var(--text-primary)" }}>Industrial / Construction</strong> —
+          proximity to known zones (OSM), weighted by live wind
+          speed/direction carrying it toward the area.
+        </div>
+        <div>
+          <strong style={{ color: "var(--text-primary)" }}>Waste-Burning</strong> — a seasonal
+          heuristic: near-zero most of the year, rising sharply
+          Oct–Nov if wind blows in from the NW (Punjab/Haryana
+          stubble-burning season).
+        </div>
+      </>
+    ),
+  },
+  {
+    label: "Reading the breakdown",
+    accentColor: "var(--aqi-poor)",
+    content: (
+      <>
+        <div style={{ marginBottom: 10 }}>
+          This is a <strong style={{ color: "var(--text-primary)" }}>transparent rule-based
+          engine</strong>, not a trained ML classifier — there's no labeled
+          "true pollution source" dataset to train against, and
+          real-world agencies (CPCB/SAFAR) use similar rule +
+          dispersion-model hybrids, not pure ML either.
+        </div>
+        <div>
+          Every weight is a documented assumption based on known
+          atmospheric behavior, not a fitted parameter — inspectable,
+          not a black box.
+        </div>
+      </>
+    ),
+  },
+];
+
+function AccordionItem({ label, accentColor, content, isOpen, onToggle }) {
   return (
-    <div style={{ paddingLeft: 12, borderLeft: `2px solid ${accentColor}` }}>
-      <div
+    <div style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+      <button
+        onClick={onToggle}
         style={{
-          fontFamily: "var(--font-mono)", fontSize: 10.5, letterSpacing: "0.06em",
-          textTransform: "uppercase", color: accentColor, marginBottom: 8,
+          width: "100%",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "14px 2px",
+          textAlign: "left",
         }}
       >
-        {label}
-      </div>
-      <div style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.65 }}>
-        {children}
-      </div>
+        <span
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 12,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            color: isOpen ? accentColor : "var(--text-primary)",
+            fontWeight: 600,
+          }}
+        >
+          {label}
+        </span>
+        <span
+          style={{
+            fontSize: 14,
+            color: accentColor,
+            transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
+            transition: "transform 0.15s ease",
+            flexShrink: 0,
+            marginLeft: 12,
+          }}
+        >
+          +
+        </span>
+      </button>
+      {isOpen && (
+        <div
+          style={{
+            paddingLeft: 12,
+            borderLeft: `2px solid ${accentColor}`,
+            margin: "0 2px 16px 2px",
+            fontSize: 13.5,
+            color: "var(--text-secondary)",
+            lineHeight: 1.65,
+          }}
+        >
+          {content}
+        </div>
+      )}
     </div>
   );
 }
 
 export default function SourceAttributionInfoPanel() {
+  const [openIndex, setOpenIndex] = useState(0); // first question open by default
+
   return (
     <div
       style={{
-        background: "var(--bg-panel)", border: "1px solid var(--border-subtle)",
-        borderRadius: "var(--radius-lg)", padding: 24, flex: "1 1 420px", minWidth: 420,
+        background: "var(--bg-panel)",
+        border: "1px solid var(--border-subtle)",
+        borderRadius: "var(--radius-lg)",
+        padding: 24,
+        height: "100%",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -32,70 +152,21 @@ export default function SourceAttributionInfoPanel() {
           About this panel
         </h4>
       </div>
-      <p style={{ fontSize: 12.5, color: "var(--text-tertiary)", margin: "8px 0 22px 0", lineHeight: 1.6, maxWidth: 640 }}>
-        A quick reference for what Source Attribution measures, why it's here, and how to read the breakdown on the left.
+      <p style={{ fontSize: 12.5, color: "var(--text-tertiary)", margin: "8px 0 18px 0", lineHeight: 1.6 }}>
+        Tap a question to expand it.
       </p>
 
-      <div
-        style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-          gap: "24px 32px",
-        }}
-      >
-        <Section label="What this shows">
-          For each of Delhi NCR's 21 monitored areas: what % of current
-          pollution is coming from <strong style={{ color: "var(--text-primary)" }}>Traffic</strong>,{" "}
-          <strong style={{ color: "var(--text-primary)" }}>Industrial</strong>,{" "}
-          <strong style={{ color: "var(--text-primary)" }}>Construction</strong>,{" "}
-          <strong style={{ color: "var(--text-primary)" }}>Waste/Stubble-Burning</strong>, and
-          non-local <strong style={{ color: "var(--text-primary)" }}>Regional Background</strong>.
-          "Compare all locations" stacks all 21 side-by-side so you can
-          spot which area's dominant source stands out.
-        </Section>
-
-        <Section label="Why it's here" accentColor="var(--aqi-satisfactory)">
-          Knowing the AQI number doesn't tell you what to *do* about it —
-          two areas at the same AQI can need completely different
-          responses (traffic curbs vs. industrial inspection vs.
-          cross-state stubble-burning coordination). This is the
-          reasoning layer that Enforcement and What-if Simulation both
-          build on top of.
-        </Section>
-
-        <Section label="How it's calculated" accentColor="var(--accent-dim)">
-          <div style={{ marginBottom: 10 }}>
-            <strong style={{ color: "var(--text-primary)" }}>Traffic</strong> — live congestion
-            (TomTom). <strong style={{ color: "var(--text-primary)" }}>Industrial / Construction</strong> —
-            proximity to known zones (OSM), weighted by live wind
-            speed/direction carrying it toward the area.
-          </div>
-          <div>
-            <strong style={{ color: "var(--text-primary)" }}>Waste-Burning</strong> — a seasonal
-            heuristic: near-zero most of the year, rising sharply
-            Oct–Nov if wind blows in from the NW (Punjab/Haryana
-            stubble-burning season).
-          </div>
-        </Section>
-
-        <Section label="Reading the breakdown" accentColor="var(--aqi-poor)">
-          <div style={{ marginBottom: 10 }}>
-            This is a <strong style={{ color: "var(--text-primary)" }}>transparent rule-based
-            engine</strong>, not a trained ML classifier — there's no labeled
-            "true pollution source" dataset to train against, and
-            real-world agencies (CPCB/SAFAR) use similar rule +
-            dispersion-model hybrids, not pure ML either.
-          </div>
-          <div>
-            Every weight is a documented assumption based on known
-            atmospheric behavior, not a fitted parameter — inspectable,
-            not a black box.
-          </div>
-        </Section>
-      </div>
-
-      <div style={{ fontSize: 11, color: "var(--text-tertiary)", lineHeight: 1.6, borderTop: "1px solid var(--border-subtle)", marginTop: 22, paddingTop: 14 }}>
-        Treat this as explainable reasoning for prioritizing action, not
-        a certified source-apportionment measurement.
+      <div>
+        {QUESTIONS.map((q, i) => (
+          <AccordionItem
+            key={q.label}
+            label={q.label}
+            accentColor={q.accentColor}
+            content={q.content}
+            isOpen={openIndex === i}
+            onToggle={() => setOpenIndex(openIndex === i ? -1 : i)}
+          />
+        ))}
       </div>
     </div>
   );

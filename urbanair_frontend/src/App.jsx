@@ -345,8 +345,8 @@ const refreshGrap = useCallback(() => {
             </button>
           </div>
 
-          <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
-            <div style={{ background: "var(--bg-panel)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: 20, maxWidth: attributionView === "compare" ? 700 : 520, flex: "1 1 auto" }}>
+          <div style={{ display: "flex", gap: 20, alignItems: "stretch" }}>
+            <div style={{ background: "var(--bg-panel)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: 24, flex: "6 1 0%", minWidth: 0 }}>
               {attributionView === "single" ? (
                 attributionData ? (
                   <SourceAttributionChart data={attributionData} />
@@ -361,7 +361,9 @@ const refreshGrap = useCallback(() => {
                 <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>Loading comparison...</span>
               )}
             </div>
-            <SourceAttributionInfoPanel />
+            <div style={{ flex: "4 1 0%", minWidth: 260 }}>
+              <SourceAttributionInfoPanel />
+            </div>
           </div>
         </div>
       )}

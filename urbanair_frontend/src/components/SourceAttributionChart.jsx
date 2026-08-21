@@ -1,12 +1,12 @@
 import React from "react";
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 const SOURCE_COLORS = {
-  traffic_pct: "#FF7A00",
+  traffic_pct: "#F59E0B",
   industrial_pct: "#D9534F",
   construction_pct: "#8B96A5",
   waste_burning_pct: "#FFC107",
-  background_pct: "#2DD9C0",
+  background_pct: "#0b7a99",
 };
 
 const SOURCE_LABELS = {
@@ -20,17 +20,26 @@ const SOURCE_LABELS = {
 export default function SourceAttributionChart({ data }) {
   if (!data) return null;
 
-  const chartData = Object.entries(data.sources).map(([key, value]) => ({
-    key,
-    name: SOURCE_LABELS[key],
-    value,
-    color: SOURCE_COLORS[key],
-  }));
+  // Build once, sort once -- this SAME array (not a re-sorted copy) drives
+  // both the Pie's slice order and the legend list below, so a slice's
+  // index always lines up with the right color and the right row. (A
+  // previous version sorted a second time right before rendering the
+  // legend, which mutated the array in place -- since Recharts reads the
+  // `data` prop after this function returns, that caused each Cell's color
+  // to line up with the WRONG slice by index once the array got reordered.)
+  const chartData = Object.entries(data.sources)
+    .map(([key, value]) => ({
+      key,
+      name: SOURCE_LABELS[key],
+      value,
+      color: SOURCE_COLORS[key],
+    }))
+    .sort((a, b) => b.value - a.value);
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-        <h3 style={{ fontFamily: "var(--font-display)", fontSize: 15, margin: 0 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
+        <h3 style={{ fontFamily: "var(--font-display)", fontSize: 17, margin: 0 }}>
           Source Attribution — {data.point}
         </h3>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--text-tertiary)" }}>
@@ -38,44 +47,45 @@ export default function SourceAttributionChart({ data }) {
         </span>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <ResponsiveContainer width={180} height={180}>
-          <PieChart>
-            <Pie
-              data={chartData}
-              dataKey="value"
-              nameKey="name"
-              innerRadius={45}
-              outerRadius={80}
-              paddingAngle={2}
-            >
-              {chartData.map((entry) => (
-                <Cell key={entry.key} fill={entry.color} stroke="var(--bg-panel)" strokeWidth={2} />
-              ))}
-            </Pie>
-            <Tooltip
-              contentStyle={{ background: "var(--bg-panel-raised)", border: "1px solid var(--border-strong)", borderRadius: 8, fontFamily: "var(--font-mono)", fontSize: 12 }}
-              formatter={(value) => `${value}%`}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5cm", flexWrap: "wrap" }}>
+        <div style={{ flex: "0 0 auto", width: "min(100%, 340px)" }}>
+          <ResponsiveContainer width="100%" height={340}>
+            <PieChart>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                innerRadius="60%"
+                outerRadius="98%"
+                paddingAngle={2}
+                isAnimationActive={false}
+              >
+                {chartData.map((entry) => (
+                  <Cell key={entry.key} fill={entry.color} stroke="var(--bg-panel)" strokeWidth={2} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{ background: "var(--bg-panel-raised)", border: "1px solid var(--border-strong)", borderRadius: 8, fontFamily: "var(--font-mono)", fontSize: 12 }}
+                formatter={(value) => `${value}%`}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
-          {chartData
-            .sort((a, b) => b.value - a.value)
-            .map((entry) => (
-              <div key={entry.key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 13 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ width: 10, height: 10, borderRadius: 3, background: entry.color, display: "inline-block" }} />
-                  <span style={{ color: "var(--text-secondary)" }}>{entry.name}</span>
-                </div>
-                <span style={{ fontFamily: "var(--font-mono)", color: "var(--text-primary)" }}>{entry.value}%</span>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: "1 1 200px", minWidth: 200 }}>
+          {chartData.map((entry) => (
+            <div key={entry.key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 12, height: 12, borderRadius: 3, background: entry.color, display: "inline-block", flexShrink: 0 }} />
+                <span style={{ color: "var(--text-secondary)" }}>{entry.name}</span>
               </div>
-            ))}
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: 15, fontWeight: 600, color: "var(--text-primary)", marginRight: "2cm" }}>{entry.value}%</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div style={{ marginTop: 12, padding: "8px 12px", background: "var(--bg-panel-raised)", borderRadius: 8, fontSize: 11, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
+      <div style={{ marginTop: 16, padding: "10px 14px", background: "var(--bg-panel-raised)", borderRadius: 8, fontSize: 11.5, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
         Wind {data.raw_signals.wind_speed_mps} m/s @ {data.raw_signals.wind_deg}° · Congestion ratio {data.raw_signals.congestion_ratio}
         {data.raw_signals.is_stubble_burning_season && " · Stubble-burning season active"}
       </div>

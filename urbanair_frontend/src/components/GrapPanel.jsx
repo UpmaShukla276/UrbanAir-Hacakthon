@@ -1,4 +1,5 @@
 import React from "react";
+import GrapSummaryBanner from "./GrapSummaryBanner";
 
 export default function GrapPanel({ data, onRefresh, refreshing }) {
   if (!data || data.length === 0) return null;
@@ -20,6 +21,8 @@ export default function GrapPanel({ data, onRefresh, refreshing }) {
           )}
         </div>
       </div>
+
+      <GrapSummaryBanner data={data} />
 
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {data.map((item) => {

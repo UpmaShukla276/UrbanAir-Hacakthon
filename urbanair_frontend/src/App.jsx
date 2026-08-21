@@ -140,8 +140,10 @@ export default function App() {
 
 
   useEffect(() => {
-  api.grapAll().then(setGrapData).catch((e) => console.error(e));
-}, []);
+  if (activeTab === "grap" && !grapData) {
+    api.grapAll().then(setGrapData).catch((e) => console.error(e));
+    }
+  }, [activeTab, grapData]);
 
 const refreshGrap = useCallback(() => {
   setRefreshingGrap(true);
@@ -185,7 +187,9 @@ const refreshGrap = useCallback(() => {
       api.enforcement().then(setEnforcementData).catch((e) => console.error(e));
       api.sourceAttributionAll().then(setAttributionAllData).catch((e) => console.error(e));
       api.healthAdvisoryAll().then(setHealthAllData).catch((e) => console.error(e));
-      api.grapAll().then(setGrapData).catch((e) => console.error(e));
+      if (activeTab === "grap") {
+        api.grapAll().then(setGrapData).catch((e) => console.error(e));
+      }
     }, 60000);
     return () => clearInterval(interval);
   }, [loadCities, loadCityDetail, selectedCity]);

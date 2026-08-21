@@ -21,6 +21,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 from typing import Optional
+from unittest import result
 
 import joblib
 import numpy as np
@@ -31,6 +32,7 @@ from pydantic import BaseModel
 
 import source_attribution as sa
 import grap
+from concurrent.futures import ThreadPoolExecutor
 import green_cover as gc
 import live_history
 from . import alert_generator
@@ -576,21 +578,28 @@ def grap_status(point: str):
     fc = forecast(city_for_aqi)
     fc_24h = next(f for f in fc["forecasts"] if f["horizon_hours"] == 24)
 
-    return grap.zone_grap_status(
-        point, current["aqi"], fc_24h["predicted_aqi"], fc["data_maturity"]["is_warming_up"]
-    )
+    result = grap.zone_grap_status(
+    point, current["aqi"], fc_24h["predicted_aqi"], fc["data_maturity"]["is_warming_up"]
+)
+    result["lat"] = point_lat
+    result["lon"] = point_lon
+    return result
 
 
 @app.get("/api/grap")
 def grap_status_all():
-    results = []
-    for point in sa.CITY_COORDS:
+    def safe_grap(point):
         try:
-            results.append(grap_status(point))
+            return grap_status(point)
         except HTTPException:
-            continue
+            return None
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        results = list(executor.map(safe_grap, sa.CITY_COORDS))
+
+    results = [r for r in results if r is not None]
     results.sort(
-        key=lambda r: (r["recommended_stage"]["stage"] if r["recommended_stage"] else 0),
+        key=lambda r: (r["escalation_warning"], r["recommended_stage"]["stage"] if r["recommended_stage"] else 0),
         reverse=True,
     )
     return results

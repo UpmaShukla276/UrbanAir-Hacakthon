@@ -10,9 +10,6 @@ export default function ForecastPanel({ forecasts, metrics, dataMaturity }) {
         <h3 style={{ fontFamily: "var(--font-display)", fontSize: 15, margin: 0, color: "var(--text-primary)" }}>
           Forecast
         </h3>
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--text-tertiary)" }}>
-          LightGBM · lag-feature model
-        </span>
       </div>
 
       {dataMaturity?.is_warming_up && (

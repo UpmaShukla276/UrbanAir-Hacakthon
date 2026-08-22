@@ -47,12 +47,14 @@ export default function GrapPanel({ data, onRefresh, refreshing }) {
                     }}>
                       {stage.label} · {stage.category}
                     </span>
-                  ) : (
+                                    ) : (
                     <span style={{
                       fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--text-tertiary)",
                       border: "1px solid var(--border-strong)", borderRadius: 4, padding: "2px 8px",
                     }}>
-                      AQI {Math.round(item.current_aqi)} · No GRAP stage
+                      {item.current_aqi != null
+                        ? `AQI ${Math.round(item.current_aqi)} · No GRAP stage`
+                        : "No live station nearby"}
                     </span>
                   )}
                 </div>

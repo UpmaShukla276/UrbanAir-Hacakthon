@@ -15,6 +15,10 @@ actually disagree by more than ARBITRATION_THRESHOLD. When they roughly
 agree, there's nothing to arbitrate -- WAQI (real ground-station data) is
 used directly, no API call needed.
 
+Results are cached per city for CACHE_TTL_SECONDS -- the frontend polls
+every ~60s and the underlying live data doesn't change nearly that fast,
+so re-arbitrating every poll just burns rate limit for no new signal.
+
 If GROQ_API_KEY isn't set, or the call fails for any reason, this fails
 SAFE: it defaults to WAQI (ground-station reading) and reports that
 arbitration didn't run, rather than blocking the request or guessing.
@@ -22,6 +26,7 @@ arbitration didn't run, rather than blocking the request or guessing.
 
 import os
 import json
+import time
 import requests
 from dotenv import load_dotenv
 
@@ -32,6 +37,9 @@ GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 ARBITRATION_THRESHOLD = 0.15  # only arbitrate if readings differ by >15%
+
+_arbitration_cache = {}  # {city: (cached_at_timestamp, result_dict)}
+CACHE_TTL_SECONDS = 300  # 5 minutes
 
 
 def is_configured() -> bool:
@@ -57,6 +65,11 @@ def arbitrate(city: str, waqi_aqi: float, waqi_category: str, model_aqi: float,
           "arbitrated": bool,   # False if Groq wasn't called/failed
         }
     """
+    now = time.time()
+    cached = _arbitration_cache.get(city)
+    if cached and (now - cached[0]) < CACHE_TTL_SECONDS:
+        return cached[1]
+
     fallback = {
         "chosen": "waqi", "final_aqi": waqi_aqi, "final_category": waqi_category,
         "reasoning": "Arbitration not run (Groq not configured or call failed) -- "
@@ -65,6 +78,7 @@ def arbitrate(city: str, waqi_aqi: float, waqi_category: str, model_aqi: float,
     }
 
     if not is_configured():
+        _arbitration_cache[city] = (now, fallback)
         return fallback
 
     prompt = f"""You are sanity-checking two Air Quality Index readings for {city}, Delhi NCR, that disagree with each other. You cannot take a real measurement yourself -- judge plausibility only from the data given.
@@ -102,14 +116,19 @@ Respond with ONLY valid JSON, no other text:
         reasoning = parsed.get("reasoning", "")
     except Exception as e:
         fallback["reasoning"] = f"Arbitration not run (Groq call failed: {e}) -- defaulted to WAQI."
+        _arbitration_cache[city] = (now, fallback)
         return fallback
 
     if chosen == "model":
-        return {
+        result = {
             "chosen": "model", "final_aqi": model_aqi, "final_category": model_category,
             "reasoning": reasoning, "arbitrated": True,
         }
-    return {
-        "chosen": "waqi", "final_aqi": waqi_aqi, "final_category": waqi_category,
-        "reasoning": reasoning, "arbitrated": True,
-    }
+    else:
+        result = {
+            "chosen": "waqi", "final_aqi": waqi_aqi, "final_category": waqi_category,
+            "reasoning": reasoning, "arbitrated": True,
+        }
+
+    _arbitration_cache[city] = (now, result)
+    return result

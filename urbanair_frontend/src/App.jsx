@@ -22,6 +22,12 @@ import EnforcementInfoPanel from "./components/EnforcementInfoPanel";
 import SourceAttributionInfoPanel from "./components/SourceAttributionInfoPanel";
 import { api } from "./api";
 
+const SOURCE_LABELS = {
+  ground_station: { icon: "📡", label: "Ground Station · WAQI/CPCB" },
+  pollutant_model: { icon: "🧮", label: "Pollutant Model · LightGBM" },
+  arbitrated: { icon: "⚖️", label: "Arbitrated · Groq AI" },
+};
+
 const TABS = [
   { key: "overview", label: "Overview" },
   { key: "attribution", label: "Source Attribution" },
@@ -73,9 +79,6 @@ export default function App() {
       const cityList = await api.cities();
       setCities(cityList);
 
-      // Use allSettled, not all: one city missing live data (503) shouldn't
-      // take down the whole map. Cities without live data yet are simply
-      // omitted from the map markers rather than shown with stale numbers.
       const results = await Promise.allSettled(
         cityList.map(async (c) => {
           const current = await api.current(c.name);
@@ -100,11 +103,7 @@ export default function App() {
     loadCities();
   }, [loadCities]);
 
-  // Load selected city's detail (current + forecast + historical + attribution + health)
   const loadCityDetail = useCallback(async (city) => {
-    // Each call fails independently -- e.g. forecast/historical returning 503
-    // during the live-data warm-up period shouldn't blank out the current
-    // reading, and vice versa.
     const [current, forecast, historical, attribution, health] = await Promise.all([
       api.current(city).catch((e) => { console.error("current:", e); return null; }),
       api.forecast(city).catch((e) => { console.error("forecast:", e); return null; }),
@@ -124,7 +123,6 @@ export default function App() {
     loadCityDetail(selectedCity);
   }, [selectedCity, loadCityDetail]);
 
-  // Load enforcement ranking once (covers all points, not city-specific)
   useEffect(() => {
     api.enforcement().then(setEnforcementData).catch((e) => console.error(e));
   }, []);
@@ -137,21 +135,17 @@ export default function App() {
       .finally(() => setRefreshingEnforcement(false));
   }, []);
 
-
-
   useEffect(() => {
-  if (activeTab === "grap" && !grapData) {
-    api.grapAll().then(setGrapData).catch((e) => console.error(e));
+    if (activeTab === "grap" && !grapData) {
+      api.grapAll().then(setGrapData).catch((e) => console.error(e));
     }
   }, [activeTab, grapData]);
 
-const refreshGrap = useCallback(() => {
-  setRefreshingGrap(true);
-  api.grapAll().then(setGrapData).catch((e) => console.error(e)).finally(() => setRefreshingGrap(false));
-}, []);
+  const refreshGrap = useCallback(() => {
+    setRefreshingGrap(true);
+    api.grapAll().then(setGrapData).catch((e) => console.error(e)).finally(() => setRefreshingGrap(false));
+  }, []);
 
-
-  // Load all-points attribution once, for the "compare" view
   useEffect(() => {
     api.sourceAttributionAll().then(setAttributionAllData).catch((e) => console.error(e));
   }, []);
@@ -164,7 +158,6 @@ const refreshGrap = useCallback(() => {
       .finally(() => setRefreshingAttribution(false));
   }, []);
 
-  // Load all-points health advisory once, for the "compare" view
   useEffect(() => {
     api.healthAdvisoryAll().then(setHealthAllData).catch((e) => console.error(e));
   }, []);
@@ -177,9 +170,6 @@ const refreshGrap = useCallback(() => {
       .finally(() => setRefreshingHealth(false));
   }, []);
 
-  // Auto-refresh EVERYTHING every 60s so Overview / Source Attribution /
-  // Enforcement / Health Advisory / Green Cover never drift out of sync
-  // with each other -- this is the single source of truth for "now".
   useEffect(() => {
     const interval = setInterval(() => {
       loadCities();
@@ -209,7 +199,6 @@ const refreshGrap = useCallback(() => {
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <Header cities={cities} selectedCity={selectedCity} onCityChange={setSelectedCity} lastUpdated={lastUpdated} />
 
-      {/* Tab navigation */}
       <div style={{ display: "flex", gap: 4, padding: "10px 16px 0 16px", borderBottom: "1px solid var(--border-subtle)" }}>
         {TABS.map((tab) => (
           <button
@@ -244,12 +233,10 @@ const refreshGrap = useCallback(() => {
             overflow: "hidden",
           }}
         >
-          {/* Map — main visual weight */}
           <div style={{ gridArea: "map" }}>
             <MapView cityReadings={cityReadings} selectedCity={selectedCity} onSelectCity={setSelectedCity} windData={attributionData} />
           </div>
 
-          {/* Right panel: current AQI gauge + forecast */}
           <div
             style={{
               gridArea: "side",
@@ -274,6 +261,27 @@ const refreshGrap = useCallback(() => {
                     category={currentReading.category}
                     subtitle={new Date(currentReading.timestamp).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
                   />
+
+                  {currentReading.aqi_source && SOURCE_LABELS[currentReading.aqi_source] && (
+                    <div
+                      style={{
+                        marginTop: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        fontFamily: "var(--font-mono)",
+                        fontSize: 10.5,
+                        color: "var(--text-secondary)",
+                        border: "1px solid var(--border-strong)",
+                        borderRadius: 20,
+                        padding: "4px 10px",
+                      }}
+                    >
+                      <span>{SOURCE_LABELS[currentReading.aqi_source].icon}</span>
+                      <span>{SOURCE_LABELS[currentReading.aqi_source].label}</span>
+                    </div>
+                  )}
+
                   {currentReading.arbitration?.arbitrated && (
                     <div
                       title={currentReading.arbitration.reasoning}
@@ -309,7 +317,6 @@ const refreshGrap = useCallback(() => {
             {forecastData && <ForecastPanel forecasts={forecastData.forecasts} metrics={forecastData.model_metrics} dataMaturity={forecastData.data_maturity} />}
           </div>
 
-          {/* Bottom-left: historical trend, under the map */}
           <div
             style={{
               gridArea: "trend",
@@ -327,40 +334,40 @@ const refreshGrap = useCallback(() => {
       {activeTab === "attribution" && (
         <div style={{ flex: 1, padding: 20, overflowY: "auto" }}>
           <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-              <button
-                onClick={() => setAttributionView("single")}
-                style={{
-                  background: attributionView === "single" ? "var(--accent)" : "transparent",
-                  color: attributionView === "single" ? "var(--bg-base)" : "var(--text-secondary)",
-                  border: attributionView === "single" ? "2px solid var(--accent)" : "2px solid var(--border-strong)",
-                  borderRadius: "var(--radius-md)",
-                  padding: "8px 18px",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  boxShadow: attributionView === "single" ? "0 2px 8px rgba(45, 217, 192, 0.35)" : "none",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                Single location
-              </button>
-              <button
-                onClick={() => setAttributionView("compare")}
-                style={{
-                  background: attributionView === "compare" ? "var(--accent)" : "transparent",
-                  color: attributionView === "compare" ? "var(--bg-base)" : "var(--text-secondary)",
-                  border: attributionView === "compare" ? "2px solid var(--accent)" : "2px solid var(--border-strong)",
-                  borderRadius: "var(--radius-md)",
-                  padding: "8px 18px",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  boxShadow: attributionView === "compare" ? "0 2px 8px rgba(45, 217, 192, 0.35)" : "none",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                Compare all locations
-              </button>
+            <button
+              onClick={() => setAttributionView("single")}
+              style={{
+                background: attributionView === "single" ? "var(--accent)" : "transparent",
+                color: attributionView === "single" ? "var(--bg-base)" : "var(--text-secondary)",
+                border: attributionView === "single" ? "2px solid var(--accent)" : "2px solid var(--border-strong)",
+                borderRadius: "var(--radius-md)",
+                padding: "8px 18px",
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: "pointer",
+                boxShadow: attributionView === "single" ? "0 2px 8px rgba(45, 217, 192, 0.35)" : "none",
+                transition: "all 0.15s ease",
+              }}
+            >
+              Single location
+            </button>
+            <button
+              onClick={() => setAttributionView("compare")}
+              style={{
+                background: attributionView === "compare" ? "var(--accent)" : "transparent",
+                color: attributionView === "compare" ? "var(--bg-base)" : "var(--text-secondary)",
+                border: attributionView === "compare" ? "2px solid var(--accent)" : "2px solid var(--border-strong)",
+                borderRadius: "var(--radius-md)",
+                padding: "8px 18px",
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: "pointer",
+                boxShadow: attributionView === "compare" ? "0 2px 8px rgba(45, 217, 192, 0.35)" : "none",
+                transition: "all 0.15s ease",
+              }}
+            >
+              Compare all locations
+            </button>
           </div>
 
           <div style={{ display: "flex", gap: 20, alignItems: "stretch" }}>
@@ -412,45 +419,44 @@ const refreshGrap = useCallback(() => {
         </div>
       )}
 
-
       {activeTab === "health" && (
         <div style={{ flex: 1, padding: 20, overflowY: "auto" }}>
           <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-              <button
-                onClick={() => setHealthView("single")}
-                style={{
-                  background: healthView === "single" ? "var(--accent)" : "transparent",
-                  color: healthView === "single" ? "var(--bg-base)" : "var(--text-secondary)",
-                  border: healthView === "single" ? "2px solid var(--accent)" : "2px solid var(--border-strong)",
-                  borderRadius: "var(--radius-md)",
-                  padding: "8px 18px",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  boxShadow: healthView === "single" ? "0 2px 8px rgba(45, 217, 192, 0.35)" : "none",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                Single location
-              </button>
-              <button
-                onClick={() => setHealthView("compare")}
-                style={{
-                  background: healthView === "compare" ? "var(--accent)" : "transparent",
-                  color: healthView === "compare" ? "var(--bg-base)" : "var(--text-secondary)",
-                  border: healthView === "compare" ? "2px solid var(--accent)" : "2px solid var(--border-strong)",
-                  borderRadius: "var(--radius-md)",
-                  padding: "8px 18px",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  boxShadow: healthView === "compare" ? "0 2px 8px rgba(45, 217, 192, 0.35)" : "none",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                Compare all areas
-              </button>
-            </div>
+            <button
+              onClick={() => setHealthView("single")}
+              style={{
+                background: healthView === "single" ? "var(--accent)" : "transparent",
+                color: healthView === "single" ? "var(--bg-base)" : "var(--text-secondary)",
+                border: healthView === "single" ? "2px solid var(--accent)" : "2px solid var(--border-strong)",
+                borderRadius: "var(--radius-md)",
+                padding: "8px 18px",
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: "pointer",
+                boxShadow: healthView === "single" ? "0 2px 8px rgba(45, 217, 192, 0.35)" : "none",
+                transition: "all 0.15s ease",
+              }}
+            >
+              Single location
+            </button>
+            <button
+              onClick={() => setHealthView("compare")}
+              style={{
+                background: healthView === "compare" ? "var(--accent)" : "transparent",
+                color: healthView === "compare" ? "var(--bg-base)" : "var(--text-secondary)",
+                border: healthView === "compare" ? "2px solid var(--accent)" : "2px solid var(--border-strong)",
+                borderRadius: "var(--radius-md)",
+                padding: "8px 18px",
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: "pointer",
+                boxShadow: healthView === "compare" ? "0 2px 8px rgba(45, 217, 192, 0.35)" : "none",
+                transition: "all 0.15s ease",
+              }}
+            >
+              Compare all areas
+            </button>
+          </div>
 
           <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
             <div style={{ background: "var(--bg-panel)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: 20, maxWidth: healthView === "compare" ? 700 : 480, flex: "1 1 auto" }}>

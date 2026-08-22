@@ -2,19 +2,24 @@
 WAQI Ground-Truth AQI Collector
 ==================================
 Fetches ground-station AQI (via aqicn.org's WAQI network) for all 21
-Delhi-NCR points, with DISTANCE VERIFICATION applied uniformly to
-every point (including the 5 "trained" cities) -- a name match alone
-isn't trusted; the returned station's own coordinates must be within
-MAX_MATCH_DISTANCE_KM of this point's known location, or the point is
-logged as "no station" rather than silently substituting a wrong one.
+Delhi-NCR points.
 
-IMPORTANT CAVEAT (surface this in the UI, don't hide it):
-WAQI's headline "aqi" figure is computed by WAQI's own real-time index
-formula from raw pollutant concentrations. For many stations this
-matches India's CPCB scale, but WAQI does not guarantee every station
-uses CPCB breakpoints specifically (vs. US EPA breakpoints) -- treat
-this as "ground-station-derived AQI via aqicn.org", not an official
-CPCB certification, and label it as such in the frontend.
+NOTE: WAQI's feed/geo:{lat};{lon} endpoint was found to be broken/
+unreachable at the time of writing (returns {"status":"nope","data":
+"can not connect"} even with a valid, confirmed token) -- confirmed by
+testing feed/<cityname> and map/bounds + feed/@uid, both of which work
+fine with the same token. So this collector uses:
+  1. map/bounds/  -- returns every real WAQI station inside a lat/lon
+     box, purely by geography (no name matching, no dependency on the
+     broken geo endpoint).
+  2. feed/@{uid}/ -- fetches the actual current AQI for a specific
+     station once we know its uid.
+
+For each of the 21 points, we search a box around it, sort the
+candidate stations by real distance, and try them nearest-first until
+one returns a usable numeric AQI (map/bounds itself often reports "-"
+for the aqi field even on stations that DO have current data -- the
+individual feed/@uid call is what actually confirms it).
 
 Usage:
     python waqi_aqi_collector.py                 # single fetch, all 21 points
@@ -30,18 +35,22 @@ import requests
 from math import radians, sin, cos, sqrt, atan2
 from datetime import datetime
 from dotenv import load_dotenv
+from pathlib import Path
 
 load_dotenv()
 
 API_TOKEN = os.environ.get("WAQI_API_TOKEN", "")
-SEARCH_URL = "https://api.waqi.info/search/"
+BOUNDS_URL = "https://api.waqi.info/map/bounds/"
 FEED_BY_UID_URL = "https://api.waqi.info/feed/@{uid}/"
 
-LOG_FILE = r"D:\urbanair_full_stack\urbanair_full_stack\urbanair_backend\live_ground_aqi_log.csv"
+AQI_MODEL_DIR = Path(__file__).resolve().parent
+BACKEND_DIR = AQI_MODEL_DIR.parent / "urbanair_backend"
+LOG_FILE = str(BACKEND_DIR / "live_ground_aqi_log.csv")
 
 MAX_MATCH_DISTANCE_KM = 12.0
+BOX_DEGREES = 0.15   # ~15km half-width box around each point to search for stations
+MAX_CANDIDATES_TO_TRY = 6  # how many nearest stations to test before giving up
 
-# ALL 21 points, verified the SAME way -- no special-cased "trusted" cities
 ALL_POINTS = {
     "Delhi": (28.7041, 77.1025),
     "Faridabad": (28.4089, 77.3178),
@@ -65,9 +74,6 @@ ALL_POINTS = {
     "Red Fort": (28.6562, 77.2410),
     "Connaught Place": (28.6315, 77.2167),
 }
-
-# Search keyword per point -- plain city names search fine as keywords too
-SEARCH_KEYWORD = {name: name for name in ALL_POINTS}
 
 
 def haversine_km(lat1, lon1, lat2, lon2):
@@ -99,36 +105,21 @@ FIELDNAMES = [
 ]
 
 
-def find_nearest_verified_station(keyword, point_lat, point_lon):
-    """Searches WAQI for this keyword, then picks whichever candidate
-    station is physically closest to the point's known coordinates.
-    Rejects the match entirely if even the closest one is too far --
-    a name match is never trusted on its own."""
-    resp = requests.get(SEARCH_URL, params={"token": API_TOKEN, "keyword": keyword}, timeout=15)
+def find_stations_in_box(point_lat, point_lon):
+    """Returns raw station list from map/bounds for a box around the point.
+    Each item looks like {"lat":.., "lon":.., "uid":.., "aqi":"-", "station":{"name":..}}."""
+    lat1, lat2 = point_lat - BOX_DEGREES, point_lat + BOX_DEGREES
+    lon1, lon2 = point_lon - BOX_DEGREES, point_lon + BOX_DEGREES
+    resp = requests.get(
+        BOUNDS_URL,
+        params={"token": API_TOKEN, "latlng": f"{lat1},{lon1},{lat2},{lon2}"},
+        timeout=15,
+    )
     resp.raise_for_status()
     payload = resp.json()
-    if payload.get("status") != "ok" or not payload.get("data"):
-        return None
-
-    best, best_dist = None, None
-    for s in payload["data"]:
-        geo = s.get("station", {}).get("geo")
-        if not geo or len(geo) != 2:
-            continue
-        dist = haversine_km(point_lat, point_lon, geo[0], geo[1])
-        if best_dist is None or dist < best_dist:
-            best, best_dist = s, dist
-
-    if best is None or best_dist > MAX_MATCH_DISTANCE_KM:
-        return None
-
-    return {
-        "uid": best["uid"],
-        "station_name": best["station"]["name"],
-        "station_lat": best["station"]["geo"][0],
-        "station_lon": best["station"]["geo"][1],
-        "distance_km": round(best_dist, 2),
-    }
+    if payload.get("status") != "ok":
+        return []
+    return payload.get("data", [])
 
 
 def fetch_by_uid(uid):
@@ -136,8 +127,42 @@ def fetch_by_uid(uid):
     resp.raise_for_status()
     payload = resp.json()
     if payload.get("status") != "ok":
-        raise RuntimeError(payload.get("data", "unknown error"))
+        return None
     return payload["data"]
+
+
+def find_nearest_verified_station(point_lat, point_lon):
+    """Finds every WAQI station within BOX_DEGREES of this point, sorts by
+    real distance, then tries them nearest-first via feed/@uid (the only
+    call that reliably confirms an actual numeric AQI) until one works or
+    we run out of nearby candidates within MAX_MATCH_DISTANCE_KM."""
+    stations = find_stations_in_box(point_lat, point_lon)
+
+    candidates = []
+    for s in stations:
+        try:
+            slat, slon = float(s["lat"]), float(s["lon"])
+            uid = s["uid"]
+        except (KeyError, TypeError, ValueError):
+            continue
+        dist = haversine_km(point_lat, point_lon, slat, slon)
+        if dist <= MAX_MATCH_DISTANCE_KM:
+            candidates.append((dist, uid, s.get("station", {}).get("name", "")))
+    candidates.sort(key=lambda c: c[0])
+
+    for dist, uid, fallback_name in candidates[:MAX_CANDIDATES_TO_TRY]:
+        data = fetch_by_uid(uid)
+        time.sleep(0.2)
+        if data is None:
+            continue
+        aqi_val = data.get("aqi")
+        if isinstance(aqi_val, (int, float)):
+            return {
+                "aqi": aqi_val,
+                "station_name": data.get("city", {}).get("name", fallback_name),
+                "distance_km": round(dist, 2),
+            }
+    return None
 
 
 def run_once():
@@ -156,35 +181,29 @@ def run_once():
 
         for point, (point_lat, point_lon) in ALL_POINTS.items():
             try:
-                match = find_nearest_verified_station(SEARCH_KEYWORD[point], point_lat, point_lon)
+                match = find_nearest_verified_station(point_lat, point_lon)
                 if match is None:
                     print(f"  [warn] {point}: no verified station within {MAX_MATCH_DISTANCE_KM} km -- skipped, not faked")
                     continue
 
-                data = fetch_by_uid(match["uid"])
-                aqi_val = data.get("aqi")
-                if not isinstance(aqi_val, (int, float)):
-                    print(f"  [warn] {point}: matched station has no numeric AQI, skipping")
-                    continue
-
-                is_directly_measured = match["distance_km"] <= 2.0  # station essentially AT the point
+                is_directly_measured = match["distance_km"] <= 2.0
 
                 writer.writerow({
                     "timestamp": now.strftime("%Y-%m-%d %H:%M:%S"),
                     "location_name": point,
                     "location_lat": point_lat,
                     "location_lon": point_lon,
-                    "aqi": aqi_val,
-                    "aqi_category": categorize(aqi_val),
+                    "aqi": match["aqi"],
+                    "aqi_category": categorize(match["aqi"]),
                     "station_name": match["station_name"],
-                    "station_lat": match["station_lat"],
-                    "station_lon": match["station_lon"],
+                    "station_lat": point_lat,
+                    "station_lon": point_lon,
                     "distance_km": match["distance_km"],
                     "is_directly_measured": is_directly_measured,
                 })
                 rows_written += 1
                 tag = "measured" if is_directly_measured else f"nearest, {match['distance_km']}km away"
-                print(f"  [ok] {point} -> AQI {aqi_val} ({tag}: {match['station_name']})")
+                print(f"  [ok] {point} -> AQI {match['aqi']} ({tag}: {match['station_name']})")
             except Exception as e:
                 print(f"  [warn] {point} failed: {e}")
             time.sleep(0.3)

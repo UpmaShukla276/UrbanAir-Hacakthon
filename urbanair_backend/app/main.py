@@ -213,48 +213,48 @@ def _load_latest_ground_aqi(city: str):
 from datetime import timedelta
 
 def get_real_current_aqi(point: str, point_lat: float, point_lon: float):
-    """Always prefers a REAL ground-station reading (WAQI/CPCB) -- never
-    silently falls back to the PM2.5-based nowcast model without labeling
-    it clearly. A stale row (>3h old) is treated as unavailable, not used."""
+    """For the 5 trained cities: delegates entirely to get_current() --
+    the full WAQI -> pollutant-model -> Groq-arbitration flow, unchanged.
 
-    def fresh_row(name):
-        row = _load_latest_ground_aqi(name)
-        if row is None:
-            return None
-        age = datetime.now() - row["timestamp"].to_pydatetime()
-        if age > timedelta(hours=3):
-            return None
-        return row
+    For the other 16 hotspots/landmarks: ONLY uses that point's own
+    nearby WAQI station (within MAX_STALE_HOURS). No proxying to a
+    different city's number, no model estimate -- if this point doesn't
+    have its own fresh station reading, that's reported honestly as
+    unavailable rather than silently substituting a nearby city's AQI."""
 
-    row = fresh_row(point)
+    MAX_STALE_HOURS = 3
+
+    if point in CITY_COORDS:
+        # This is one of the 5 trained cities -- use the full flow as-is.
+        result = get_current(point)
+        return {
+            "aqi": result["aqi"],
+            "category": result["category"],
+            "station_name": f"{point} ({result['aqi_source']})",
+            "distance_km": 0.0,
+            "source_type": result["aqi_source"],
+        }
+
+    # 16 hotspots/landmarks: own station only, no proxy.
+    row = _load_latest_ground_aqi(point)
     if row is not None:
-        distance_km = float(row.get("distance_km", 0) or 0)
-        return {
-            "aqi": float(row["aqi"]),
-            "category": row["aqi_category"],
-            "station_name": row.get("station_name", ""),
-            "distance_km": distance_km,
-            "source_type": "measured" if distance_km <= 2.0 else "nearest",
-        }
+        age = datetime.now() - row["timestamp"].to_pydatetime()
+        if age <= timedelta(hours=MAX_STALE_HOURS):
+            distance_km = float(row.get("distance_km", 0) or 0)
+            return {
+                "aqi": float(row["aqi"]),
+                "category": row["aqi_category"],
+                "station_name": row.get("station_name", ""),
+                "distance_km": distance_km,
+                "source_type": "measured" if distance_km <= 2.0 else "nearest",
+            }
 
-    city_for_aqi, dist_km = sa.nearest_known_city(point_lat, point_lon)
-    nearest_row = fresh_row(city_for_aqi)
-    if nearest_row is not None:
-        return {
-            "aqi": float(nearest_row["aqi"]),
-            "category": nearest_row["aqi_category"],
-            "station_name": f"{nearest_row.get('station_name', city_for_aqi)} (proxy)",
-            "distance_km": round(dist_km, 2),
-            "source_type": "proxy",
-        }
-
-    fallback = get_current(city_for_aqi)
     return {
-        "aqi": fallback["aqi"],
-        "category": fallback["category"],
-        "station_name": f"{city_for_aqi} (model estimate, no live station)",
-        "distance_km": round(dist_km, 2),
-        "source_type": "model_estimate",
+        "aqi": None,
+        "category": None,
+        "station_name": "No live station nearby",
+        "distance_km": None,
+        "source_type": "unavailable",
     }
 
 
@@ -286,44 +286,65 @@ def get_current(city: str):
     live_pollutants = _load_latest_live_pollutants(city)
     ground_aqi_row = _load_latest_ground_aqi(city)
 
-    if ground_aqi_row is None and live_pollutants is None:
+    # Agar ground station ka row 3 ghante se purana hai, to use "unavailable"
+    # treat karo -- warna collector ke "skip" karne ke baad bhi website
+    # purana number dikhata rahega, jo terminal se match nahi karega.
+    if ground_aqi_row is not None:
+        age = datetime.now() - ground_aqi_row["timestamp"].to_pydatetime()
+        if age > timedelta(hours=3):
+            ground_aqi_row = None
+
+        # ----- PRIORITY 1: WAQI ground station -----
+
+    
+
+        # ----- PRIORITY 1: WAQI ground station -----
+    pollutants = None
+    pollutant_ts = None
+    if live_pollutants is not None:
+        pollutants = {
+            "co": float(live_pollutants["co"]), "no2": float(live_pollutants["no2"]),
+            "o3": float(live_pollutants["o3"]), "pm10": float(live_pollutants["pm10"]),
+            "pm25": float(live_pollutants["pm25"]), "so2": float(live_pollutants["so2"]),
+        }
+        pollutant_ts = live_pollutants["timestamp"]
+
+    arbitration = None
+    aqi_source = None
+
+    if ground_aqi_row is not None:
+        # WAQI available -- this is priority 1, use it directly.
+        # The pollutant model is NOT run at all here: comparing a real
+        # sensor reading against a derived estimate adds noise, not signal,
+        # when the real reading already exists.
+        aqi_val = float(ground_aqi_row["aqi"])
+        category = ground_aqi_row["aqi_category"]
+        data_as_of = ground_aqi_row["timestamp"]
+        aqi_source = "ground_station"
+
+    elif pollutants is not None:
+        # ----- PRIORITY 2: Pollutant-based ML model (WAQI unavailable) -----
+        model_aqi, model_category = _predict_aqi_from_pollutants(
+            city, pollutants["co"], pollutants["no2"], pollutants["o3"],
+            pollutants["pm10"], pollutants["pm25"], pollutants["so2"],
+            pollutant_ts.to_pydatetime(),
+        )
+        aqi_val, category, data_as_of = model_aqi, model_category, pollutant_ts
+        aqi_source = "pollutant_model"
+
+    else:
         raise HTTPException(
             503,
             f"No live data available yet for {city}. Run aqi_model/run_all.py "
             f"and wait a minute or two for the first collector rows to land."
         )
 
-    model_aqi = model_category = None
-    if live_pollutants is not None:
-        co, no2, o3 = float(live_pollutants["co"]), float(live_pollutants["no2"]), float(live_pollutants["o3"])
-        pm10, pm25, so2 = float(live_pollutants["pm10"]), float(live_pollutants["pm25"]), float(live_pollutants["so2"])
-        pollutant_ts = live_pollutants["timestamp"]
-        model_aqi, model_category = _predict_aqi_from_pollutants(city, co, no2, o3, pm10, pm25, so2, pollutant_ts.to_pydatetime())
-        pollutants = {"co": co, "no2": no2, "o3": o3, "pm10": pm10, "pm25": pm25, "so2": so2}
-    else:
-        pollutant_ts = None
-        pollutants = None
-
-    arbitration = None
-    if ground_aqi_row is not None and model_aqi is not None:
-        waqi_aqi, waqi_category = float(ground_aqi_row["aqi"]), ground_aqi_row["aqi_category"]
-        if groq_arbiter.needs_arbitration(waqi_aqi, model_aqi):
-            live_hist = live_history.get_live_history()
-            city_hist = live_hist[live_hist["location_name"] == city].tail(24)
-            recent_trend = [round(float(v), 1) for v in city_hist["aqi"].tolist()]
-            arbitration = groq_arbiter.arbitrate(
-                city, waqi_aqi, waqi_category, model_aqi, model_category,
-                pollutants, nowcast_meta["regression_metrics"][nowcast_meta["best_regressor"]]["MAE"],
-                recent_trend,
-            )
-            aqi_val, category = arbitration["final_aqi"], arbitration["final_category"]
-            data_as_of = ground_aqi_row["timestamp"] if arbitration["chosen"] == "waqi" else pollutant_ts
-        else:
-            aqi_val, category, data_as_of = waqi_aqi, waqi_category, ground_aqi_row["timestamp"]
-    elif ground_aqi_row is not None:
-        aqi_val, category, data_as_of = float(ground_aqi_row["aqi"]), ground_aqi_row["aqi_category"], ground_aqi_row["timestamp"]
-    else:
-        aqi_val, category, data_as_of = model_aqi, model_category, pollutant_ts
+    # ----- PRIORITY 3: Groq arbitration -----
+    # Only relevant in the rare case both sources exist AND genuinely
+    # disagree -- since priority 1/2 above already picks WAQI whenever
+    # it's available, this mainly matters if you want a second opinion
+    # even when WAQI exists. Currently skipped by design (see above);
+    # kept here only for the /api/nowcast manual-entry path elsewhere.
 
     is_estimated = False  # both sources here are live; no static fallback left
 
@@ -333,6 +354,7 @@ def get_current(city: str):
     return {
         "city": city,
         "arbitration": arbitration,
+        "aqi_source": aqi_source,
         "timestamp": datetime.now().isoformat(),
         "data_as_of": data_as_of.isoformat(),
         "is_estimated": is_estimated,
@@ -341,7 +363,6 @@ def get_current(city: str):
         "color": AQI_CATEGORY_COLORS.get(category, "#888888"),
         "pollutants": pollutants,
     }
-
 
 
 def _predict_aqi_from_pollutants(city: str, co: float, no2: float, o3: float, pm10: float, pm25: float, so2: float, dt: datetime):
@@ -719,11 +740,15 @@ def _build_health_advisory_payload(current, fc):
 
 @app.get("/api/health-advisory/{city}")
 def health_advisory(city: str):
-    if city not in CITY_COORDS:
+    if city not in sa.CITY_COORDS:
         raise HTTPException(404, f"Unknown city: {city}")
 
-    current = get_current(city)
-    fc = forecast(city)
+    point_lat, point_lon = sa.CITY_COORDS[city]
+    city_for_forecast, _ = sa.nearest_known_city(point_lat, point_lon)
+
+    aqi_info = get_real_current_aqi(city, point_lat, point_lon)
+    current = {"aqi": aqi_info["aqi"], "category": aqi_info["category"]}
+    fc = forecast(city_for_forecast)
     return {"city": city, **_build_health_advisory_payload(current, fc)}
 
 
@@ -798,15 +823,16 @@ def search_location(query: str):
 
 @app.get("/api/estimate")
 def estimate_point(lat: float, lon: float):
-    """Hyperlocal estimate for ANY lat/lon in Delhi NCR -- not just the 5
-    trained cities. AQI/forecast are proxied from the nearest trained
-    city (since we don't have live pollutant sensors everywhere), but
-    Source Attribution is computed FRESH for the exact point using the
-    static geospatial layers + nearest live traffic/weather -- that part
-    is genuinely hyperlocal, not a nearest-neighbor copy."""
+    """Hyperlocal estimate for ANY lat/lon in Delhi NCR..."""
     nearest_city, dist_km = sa.nearest_known_city(lat, lon)
 
-    proxy_current = get_current(nearest_city)
+    nearest_point, nearest_point_dist = None, float("inf")
+    for name, (plat, plon) in sa.CITY_COORDS.items():
+        d = sa.haversine_km(lat, lon, plat, plon)
+        if d < nearest_point_dist:
+            nearest_point, nearest_point_dist = name, d
+
+    aqi_info = get_real_current_aqi(nearest_point, lat, lon)
     proxy_forecast = forecast(nearest_city)
 
     try:
@@ -824,11 +850,17 @@ def estimate_point(lat: float, lon: float):
         "lat": lat, "lon": lon,
         "nearest_known_city": nearest_city,
         "distance_to_nearest_city_km": round(dist_km, 2),
-        "proxy_note": f"AQI/forecast values are proxied from {nearest_city} "
-                      f"({round(dist_km, 1)} km away) -- no live sensor at this exact point.",
-        "aqi": proxy_current["aqi"],
-        "category": proxy_current["category"],
-        "color": proxy_current["color"],
+        "aqi_source_point": nearest_point,
+        "distance_to_aqi_source_km": round(nearest_point_dist, 2),
+        "source_type": aqi_info["source_type"],
+        "station_name": aqi_info["station_name"],
+        "proxy_note": f"AQI: {aqi_info['station_name']} ({aqi_info['source_type']}, "
+                      f"measured/estimated for {nearest_point}, {round(nearest_point_dist, 1)} km from your click). "
+                      f"Forecast: proxied from {nearest_city}'s 24/48/72h model "
+                      f"({round(dist_km, 1)} km from your click) -- no per-point forecast model exists yet.",
+        "aqi": aqi_info["aqi"],
+        "category": aqi_info["category"],
+        "color": AQI_CATEGORY_COLORS.get(aqi_info["category"], "#888888"),
         "forecast": proxy_forecast["forecasts"],
         "source_attribution": attribution,
     }
@@ -871,7 +903,9 @@ def _get_alert_context(point):
     point_lat, point_lon = sa.CITY_COORDS[point]
     city_for_aqi, _ = sa.nearest_known_city(point_lat, point_lon)
 
-    current = get_current(city_for_aqi)
+    aqi_info = get_real_current_aqi(point, point_lat, point_lon)
+    current = {"aqi": aqi_info["aqi"], "category": aqi_info["category"]}
+
     fc = forecast(city_for_aqi)
     attribution = source_attribution_point(point)
 

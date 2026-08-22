@@ -229,7 +229,7 @@ export default function MapView({ cityReadings, selectedCity, onSelectCity, wind
       </MapContainer>
 
       {/* Search bar */}
-      <div style={{ position: "absolute", top: 12, left: 12, zIndex: 1000 }}>
+      <div style={{ position: "absolute", top: 12, left: 48, zIndex: 1000 }}>
         <SearchBar onSelectLocation={handleSearchSelect} />
       </div>
 

@@ -41,7 +41,7 @@ export default function SearchBar({ onSelectLocation }) {
   };
 
   return (
-    <div style={{ position: "relative", width: 260 }}>
+    <div style={{ position: "relative", width: 180 }}>
       <input
         type="text"
         value={query}

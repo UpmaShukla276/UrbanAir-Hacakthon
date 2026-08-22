@@ -28,6 +28,13 @@ def get_live_history() -> pd.DataFrame:
     aqi_df = _load_csv_safe(LIVE_GROUND_AQI_LOG)
     poll_df = _load_csv_safe(LIVE_POLLUTANTS_LOG)
 
+    # Purane/stale rows ko hata do -- agar koi station ka data 3 ghante se
+    # zyada purana hai, wo trend/forecast mein use nahi hona chahiye
+    # (get_current() mein bhi yehi rule hai, isliye dono match karenge).
+    if not aqi_df.empty:
+        cutoff = pd.Timestamp.now() - pd.Timedelta(hours=3)
+        aqi_df = aqi_df[aqi_df["timestamp"] >= cutoff]
+
     if aqi_df.empty:
         return pd.DataFrame(columns=[
             "timestamp", "location_name", "location_lat", "location_lon",

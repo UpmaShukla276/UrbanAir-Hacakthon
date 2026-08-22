@@ -50,6 +50,31 @@ function angleDiff(a, b) {
   return Math.min(d, 360 - d);
 }
 
+// Rough geography around Delhi NCR -- which state/region a given
+// compass direction's wind is arriving from.
+const COMPASS_REGION = {
+  N: "Haryana (Panipat/Sonipat)",
+  NNE: "Haryana–Uttarakhand border",
+  NE: "Western Uttar Pradesh (Meerut)",
+  ENE: "Western Uttar Pradesh",
+  E: "Uttar Pradesh (Ghaziabad/Noida)",
+  ESE: "Uttar Pradesh (Greater Noida)",
+  SE: "UP–Rajasthan border",
+  SSE: "Rajasthan (Alwar side)",
+  S: "Haryana (Faridabad/Gurugram)",
+  SSW: "Haryana–Rajasthan border",
+  SW: "Rajasthan (Alwar/Bhiwadi)",
+  WSW: "Rajasthan (Rewari side)",
+  W: "Haryana (Rohtak/Jhajjar)",
+  WNW: "Haryana (Bhiwani)",
+  NW: "Punjab/Haryana (stubble belt)",
+  NNW: "Punjab (stubble belt)",
+};
+
+function regionForWind(deg) {
+  return COMPASS_REGION[degToCompass(deg)];
+}
+
 // Punjab/Haryana stubble belt sits roughly NW of Delhi NCR -- same 315°
 // reference bearing the backend uses for its seasonal waste-burning heuristic.
 function isUpwindFromStubbleBelt(windDeg) {
@@ -243,7 +268,7 @@ export default function MapView({ cityReadings, selectedCity, onSelectCity, wind
           Click anywhere on the map for a hyperlocal estimate
         </span>
       </div>
-            {/* Upwind Source Flagging -- live wind arrow + Regional Background callout */}
+                  {/* Upwind Source Flagging -- live wind arrow + Regional Background callout */}
       {windData && windData.raw_signals && (
         <div
           style={{
@@ -251,22 +276,25 @@ export default function MapView({ cityReadings, selectedCity, onSelectCity, wind
             bottom: 12,
             left: 12,
             zIndex: 1000,
-            background: "var(--bg-panel)",
-            border: "1px solid var(--border-strong)",
+            background: "linear-gradient(135deg, var(--bg-panel) 0%, rgba(45, 212, 191, 0.08) 100%)",
+            border: "1px solid var(--accent)",
+            boxShadow: "0 0 0 1px rgba(45, 212, 191, 0.15), 0 8px 24px rgba(0,0,0,0.35)",
             borderRadius: "var(--radius-md)",
             padding: "10px 12px",
             display: "flex",
-            alignItems: "center",
+            alignItems: "flex-start",
             gap: 10,
-            maxWidth: 260,
+            maxWidth: 270,
           }}
         >
           <div
             title={`Wind ${windData.raw_signals.wind_speed_mps} m/s from ${degToCompass(windData.raw_signals.wind_deg)}`}
             style={{
-              width: 28,
-              height: 28,
+              width: 32,
+              height: 32,
               flexShrink: 0,
+              borderRadius: "50%",
+              background: "rgba(45, 212, 191, 0.15)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -274,17 +302,22 @@ export default function MapView({ cityReadings, selectedCity, onSelectCity, wind
               transition: "transform 0.4s ease",
             }}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2 L12 22 M12 2 L6 9 M12 2 L18 9" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2 L12 22 M12 2 L6 9 M12 2 L18 9" stroke="var(--accent)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: "var(--text-secondary)", lineHeight: 1.4 }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: "var(--text-secondary)", lineHeight: 1.45 }}>
+            <div style={{ fontSize: 9, letterSpacing: "0.06em", color: "var(--accent)", fontWeight: 700, marginBottom: 2 }}>
+              LIVE WIND SOURCE
+            </div>
             <div>
-              Wind currently from{" "}
-              <strong style={{ color: "var(--text-primary)" }}>{degToCompass(windData.raw_signals.wind_deg)}</strong>
+              From <strong style={{ color: "var(--text-primary)" }}>{degToCompass(windData.raw_signals.wind_deg)}</strong>
               {" "}· {windData.raw_signals.wind_speed_mps} m/s
             </div>
-            <div style={{ marginTop: 3, color: "var(--text-tertiary)" }}>
+            <div style={{ color: "var(--text-tertiary)", marginTop: 1 }}>
+              Blowing in from {regionForWind(windData.raw_signals.wind_deg)}
+            </div>
+            <div style={{ marginTop: 4, color: "var(--text-tertiary)" }}>
               {isUpwindFromStubbleBelt(windData.raw_signals.wind_deg) && windData.raw_signals.is_stubble_burning_season ? (
                 <>
                   Regional Background ({windData.sources.background_pct}%) likely includes Punjab/Haryana

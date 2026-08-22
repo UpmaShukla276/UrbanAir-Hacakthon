@@ -27,10 +27,10 @@
   /* AQI severity palette (functional, CPCB-aligned bands) */
   --aqi-good: #00A65A;
   --aqi-satisfactory: #8CC63F;
-  --aqi-moderate: #FFC107;
-  --aqi-poor: #FF7A00;
+  --aqi-moderate: #e1a800;
+  --aqi-poor: #c1630b;
   --aqi-very-poor: #D9534F;
-  --aqi-severe: #7B1F1F;
+  --aqi-severe: #ec1616;
 
   /* Type */
   --font-display: 'Space Grotesk', sans-serif;

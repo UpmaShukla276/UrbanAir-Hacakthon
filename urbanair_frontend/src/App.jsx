@@ -326,27 +326,41 @@ const refreshGrap = useCallback(() => {
 
       {activeTab === "attribution" && (
         <div style={{ flex: 1, padding: 20, overflowY: "auto" }}>
-          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-            <button
-              onClick={() => setAttributionView("single")}
-              style={{
-                background: attributionView === "single" ? "var(--accent)" : "var(--bg-panel-raised)",
-                color: attributionView === "single" ? "var(--bg-base)" : "var(--text-secondary)",
-                border: "none", borderRadius: "var(--radius-sm)", padding: "6px 14px", fontSize: 12, cursor: "pointer",
-              }}
-            >
-              Single location
-            </button>
-            <button
-              onClick={() => setAttributionView("compare")}
-              style={{
-                background: attributionView === "compare" ? "var(--accent)" : "var(--bg-panel-raised)",
-                color: attributionView === "compare" ? "var(--bg-base)" : "var(--text-secondary)",
-                border: "none", borderRadius: "var(--radius-sm)", padding: "6px 14px", fontSize: 12, cursor: "pointer",
-              }}
-            >
-              Compare all locations
-            </button>
+          <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+              <button
+                onClick={() => setAttributionView("single")}
+                style={{
+                  background: attributionView === "single" ? "var(--accent)" : "transparent",
+                  color: attributionView === "single" ? "var(--bg-base)" : "var(--text-secondary)",
+                  border: attributionView === "single" ? "2px solid var(--accent)" : "2px solid var(--border-strong)",
+                  borderRadius: "var(--radius-md)",
+                  padding: "8px 18px",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  boxShadow: attributionView === "single" ? "0 2px 8px rgba(45, 217, 192, 0.35)" : "none",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                Single location
+              </button>
+              <button
+                onClick={() => setAttributionView("compare")}
+                style={{
+                  background: attributionView === "compare" ? "var(--accent)" : "transparent",
+                  color: attributionView === "compare" ? "var(--bg-base)" : "var(--text-secondary)",
+                  border: attributionView === "compare" ? "2px solid var(--accent)" : "2px solid var(--border-strong)",
+                  borderRadius: "var(--radius-md)",
+                  padding: "8px 18px",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  boxShadow: attributionView === "compare" ? "0 2px 8px rgba(45, 217, 192, 0.35)" : "none",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                Compare all locations
+              </button>
           </div>
 
           <div style={{ display: "flex", gap: 20, alignItems: "stretch" }}>
@@ -401,28 +415,42 @@ const refreshGrap = useCallback(() => {
 
       {activeTab === "health" && (
         <div style={{ flex: 1, padding: 20, overflowY: "auto" }}>
-          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-            <button
-              onClick={() => setHealthView("single")}
-              style={{
-                background: healthView === "single" ? "var(--accent)" : "var(--bg-panel-raised)",
-                color: healthView === "single" ? "var(--bg-base)" : "var(--text-secondary)",
-                border: "none", borderRadius: "var(--radius-sm)", padding: "6px 14px", fontSize: 12, cursor: "pointer",
-              }}
-            >
-              Single location
-            </button>
-            <button
-              onClick={() => setHealthView("compare")}
-              style={{
-                background: healthView === "compare" ? "var(--accent)" : "var(--bg-panel-raised)",
-                color: healthView === "compare" ? "var(--bg-base)" : "var(--text-secondary)",
-                border: "none", borderRadius: "var(--radius-sm)", padding: "6px 14px", fontSize: 12, cursor: "pointer",
-              }}
-            >
-              Compare all areas
-            </button>
-          </div>
+          <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+              <button
+                onClick={() => setHealthView("single")}
+                style={{
+                  background: healthView === "single" ? "var(--accent)" : "transparent",
+                  color: healthView === "single" ? "var(--bg-base)" : "var(--text-secondary)",
+                  border: healthView === "single" ? "2px solid var(--accent)" : "2px solid var(--border-strong)",
+                  borderRadius: "var(--radius-md)",
+                  padding: "8px 18px",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  boxShadow: healthView === "single" ? "0 2px 8px rgba(45, 217, 192, 0.35)" : "none",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                Single location
+              </button>
+              <button
+                onClick={() => setHealthView("compare")}
+                style={{
+                  background: healthView === "compare" ? "var(--accent)" : "transparent",
+                  color: healthView === "compare" ? "var(--bg-base)" : "var(--text-secondary)",
+                  border: healthView === "compare" ? "2px solid var(--accent)" : "2px solid var(--border-strong)",
+                  borderRadius: "var(--radius-md)",
+                  padding: "8px 18px",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  boxShadow: healthView === "compare" ? "0 2px 8px rgba(45, 217, 192, 0.35)" : "none",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                Compare all areas
+              </button>
+            </div>
 
           <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
             <div style={{ background: "var(--bg-panel)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: 20, maxWidth: healthView === "compare" ? 700 : 480, flex: "1 1 auto" }}>

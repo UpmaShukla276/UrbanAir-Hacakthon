@@ -2,11 +2,11 @@ import React from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 const SOURCE_COLORS = {
-  traffic_pct: "#F59E0B",
+  traffic_pct: "#f5ca0b",
   industrial_pct: "#D9534F",
-  construction_pct: "#8B96A5",
-  waste_burning_pct: "#FFC107",
-  background_pct: "#0b7a99",
+  construction_pct: "#798597",
+  waste_burning_pct: "#f9f95a",
+  background_pct: "#058bac",
 };
 
 const SOURCE_LABELS = {

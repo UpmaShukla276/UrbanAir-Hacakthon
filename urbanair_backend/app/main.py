@@ -19,7 +19,7 @@ Endpoints:
 
 import json
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 from unittest import result
 
@@ -210,6 +210,52 @@ def _load_latest_ground_aqi(city: str):
     if city_rows.empty:
         return None
     return city_rows.sort_values("timestamp").iloc[-1]
+from datetime import timedelta
+
+def get_real_current_aqi(point: str, point_lat: float, point_lon: float):
+    """Always prefers a REAL ground-station reading (WAQI/CPCB) -- never
+    silently falls back to the PM2.5-based nowcast model without labeling
+    it clearly. A stale row (>3h old) is treated as unavailable, not used."""
+
+    def fresh_row(name):
+        row = _load_latest_ground_aqi(name)
+        if row is None:
+            return None
+        age = datetime.now() - row["timestamp"].to_pydatetime()
+        if age > timedelta(hours=3):
+            return None
+        return row
+
+    row = fresh_row(point)
+    if row is not None:
+        distance_km = float(row.get("distance_km", 0) or 0)
+        return {
+            "aqi": float(row["aqi"]),
+            "category": row["aqi_category"],
+            "station_name": row.get("station_name", ""),
+            "distance_km": distance_km,
+            "source_type": "measured" if distance_km <= 2.0 else "nearest",
+        }
+
+    city_for_aqi, dist_km = sa.nearest_known_city(point_lat, point_lon)
+    nearest_row = fresh_row(city_for_aqi)
+    if nearest_row is not None:
+        return {
+            "aqi": float(nearest_row["aqi"]),
+            "category": nearest_row["aqi_category"],
+            "station_name": f"{nearest_row.get('station_name', city_for_aqi)} (proxy)",
+            "distance_km": round(dist_km, 2),
+            "source_type": "proxy",
+        }
+
+    fallback = get_current(city_for_aqi)
+    return {
+        "aqi": fallback["aqi"],
+        "category": fallback["category"],
+        "station_name": f"{city_for_aqi} (model estimate, no live station)",
+        "distance_km": round(dist_km, 2),
+        "source_type": "model_estimate",
+    }
 
 
 @app.get("/api/current/{city}")
@@ -492,15 +538,14 @@ def enforcement_intelligence():
         # Use nearest known city for AQI forecast (hotspots reuse their nearest city's AQI series)
         point_lat, point_lon = sa.CITY_COORDS[point]
         city_for_aqi, _ = sa.nearest_known_city(point_lat, point_lon)
+        current_aqi = get_real_current_aqi(point, point_lat, point_lon)["aqi"]
         try:
             fc = forecast(city_for_aqi)
             forecast_24h = next(f for f in fc["forecasts"] if f["horizon_hours"] == 24)
             aqi_24h = forecast_24h["predicted_aqi"]
-            current_aqi = fc["current_aqi"]
             forecast_is_warming_up = fc["data_maturity"]["is_warming_up"]
         except Exception:
             aqi_24h = None
-            current_aqi = None
             forecast_is_warming_up = None
 
         candidate_aqis = [v for v in (current_aqi, aqi_24h) if v is not None]
@@ -574,15 +619,27 @@ def grap_status(point: str):
     point_lat, point_lon = sa.CITY_COORDS[point]
     city_for_aqi, _ = sa.nearest_known_city(point_lat, point_lon)
 
-    current = get_current(city_for_aqi)
-    fc = forecast(city_for_aqi)
-    fc_24h = next(f for f in fc["forecasts"] if f["horizon_hours"] == 24)
+    aqi_info = get_real_current_aqi(point, point_lat, point_lon)
+
+    try:
+        fc = forecast(city_for_aqi)
+        fc_24h = next(f for f in fc["forecasts"] if f["horizon_hours"] == 24)
+        fc_24h_aqi = fc_24h["predicted_aqi"]
+        is_warming_up = fc["data_maturity"]["is_warming_up"]
+    except HTTPException:
+        # forecast not ready yet (still warming up) -- show current AQI/stage
+        # anyway rather than dropping this zone entirely
+        fc_24h_aqi = None
+        is_warming_up = True
 
     result = grap.zone_grap_status(
-    point, current["aqi"], fc_24h["predicted_aqi"], fc["data_maturity"]["is_warming_up"]
-)
+        point, aqi_info["aqi"], fc_24h_aqi, is_warming_up
+    )
     result["lat"] = point_lat
     result["lon"] = point_lon
+    result["station_name"] = aqi_info["station_name"]
+    result["distance_km"] = aqi_info["distance_km"]
+    result["source_type"] = aqi_info["source_type"]
     return result
 
 
@@ -686,7 +743,8 @@ def health_advisory_all():
     for point, (lat, lon) in sa.CITY_COORDS.items():
         nearest_city, dist_km = sa.nearest_known_city(lat, lon)
         try:
-            current = get_current(nearest_city)
+            aqi_info = get_real_current_aqi(point, lat, lon)
+            current = {"aqi": aqi_info["aqi"], "category": aqi_info["category"]}
             fc = forecast(nearest_city)
         except HTTPException:
             # nearest trained city has no live reading yet (still warming
@@ -791,8 +849,8 @@ def whatif(req: WhatIfRequest):
 
     attribution = source_attribution_point(req.point)
     point_lat, point_lon = sa.CITY_COORDS[req.point]
-    city_for_aqi, _ = sa.nearest_known_city(point_lat, point_lon)
-    current = get_current(city_for_aqi)
+    aqi_info = get_real_current_aqi(req.point, point_lat, point_lon)
+    current = {"aqi": aqi_info["aqi"], "category": aqi_info["category"]}
 
     reductions = {
         "traffic_pct": req.reduce_traffic_pct,

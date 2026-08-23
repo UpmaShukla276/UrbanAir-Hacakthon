@@ -12,7 +12,7 @@ export default function GrapPanel({ data, onRefresh, refreshing }) {
         </h3>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--text-tertiary)" }}>
-            {data.length} zones · current + 24h forecast
+            {data.length} zones · current
           </span>
           {onRefresh && (
             <button onClick={onRefresh} disabled={refreshing} className="refresh-btn">
@@ -62,7 +62,7 @@ export default function GrapPanel({ data, onRefresh, refreshing }) {
 
               {item.escalation_warning && (
                 <div style={{ marginTop: 8, fontSize: 11.5, color: "var(--accent)", fontFamily: "var(--font-mono)" }}>
-                  ⚠ +24h forecast crosses into {stage.label} — prepare actions before AQI arrives, don't wait.
+                  ⚠ Conditions are rising into {stage.label} — prepare actions before AQI arrives, don't wait.
                 </div>
               )}
 

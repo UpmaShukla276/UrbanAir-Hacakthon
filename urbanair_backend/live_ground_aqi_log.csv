@@ -1,0 +1,189 @@
+timestamp,location_name,location_lat,location_lon,aqi,aqi_category,station_name,station_lat,station_lon,distance_km,is_directly_measured
+2026-08-22 20:31:25,Delhi,28.7041,77.1025,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.700505,77.165603,6.17,False
+2026-08-22 20:31:25,Ghaziabad,28.6692,77.4538,142,Moderate,"Sanjay Nagar, Ghaziabad, India",28.685382,77.453839,1.8,True
+2026-08-22 20:31:25,Gurgaon,28.4595,77.0266,222,Poor,"Vikas Sadan Gurgaon, Gurgaon, India",28.4501238,77.0263051,1.04,True
+2026-08-22 20:31:25,Noida,28.5355,77.391,125,Moderate,"Sector-116, Noida, India",28.56923,77.393848,3.76,False
+2026-08-22 20:31:25,Anand Vihar,28.6469,77.3152,153,Moderate,"Anand Vihar, Delhi, Delhi, India",28.6508,77.3152,0.43,True
+2026-08-22 20:31:25,Ashok Vihar,28.698,77.173,74,Satisfactory,"Sonia Vihar Water Treatment Plant DJB, Delhi, Delhi, India",28.710066,77.24622,7.27,False
+2026-08-22 20:31:25,Bawana,28.7996,77.0339,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7757959,77.0462514,2.91,False
+2026-08-22 20:31:25,Dwarka,28.573,77.041,72,Satisfactory,"National Institute of Malaria Research, Sector 8, Dwarka, Delhi, Delhi, India",28.576909,77.075898,3.44,False
+2026-08-22 20:31:25,Jahangirpuri,28.728,77.1636,147,Moderate,"ITI Jahangirpuri, Delhi, Delhi, India",28.733016,77.17197,0.99,True
+2026-08-22 20:31:25,Mundka,28.6828,76.9821,74,Satisfactory,"Mundka, Delhi, Delhi, India",28.68241,77.030469,4.72,False
+2026-08-22 20:31:25,Narela,28.8553,77.0888,78,Satisfactory,"Narela, Delhi, Delhi, India",28.820629,77.101099,4.04,False
+2026-08-22 20:31:25,Okhla,28.5355,77.291,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.531314,77.270686,2.04,False
+2026-08-22 20:31:25,Punjabi Bagh,28.6692,77.1341,74,Satisfactory,"Punjabi Bagh, Delhi, Delhi, India",28.6683,77.1167,1.7,True
+2026-08-22 20:31:25,R.K. Puram,28.5641,77.1765,118,Moderate,"R.K. Puram, Delhi, Delhi, India",28.5648,77.1744,0.22,True
+2026-08-22 20:31:25,Rohini,28.7495,77.0565,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7757959,77.0462514,3.09,False
+2026-08-22 20:31:25,Vivek Vihar,28.672,77.3152,153,Moderate,"Anand Vihar, Delhi, Delhi, India",28.6508,77.3152,2.36,False
+2026-08-22 20:31:25,Wazirpur,28.7041,77.1663,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.700505,77.165603,0.41,True
+2026-08-23 01:22:39,Delhi,28.7041,77.1025,153,Moderate,"Shaheed Sukhdev College of Business Studies, Rohini, Delhi, Delhi, India",28.7041,77.1025,3.56,False
+2026-08-23 01:22:39,Faridabad,28.4089,77.3178,92,Satisfactory,"Dr. Karni Singh Shooting Range, Delhi, Delhi, India",28.4089,77.3178,11.25,False
+2026-08-23 01:22:39,Noida,28.5355,77.391,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.391,11.76,False
+2026-08-23 01:22:39,Anand Vihar,28.6469,77.3152,153,Moderate,"Anand Vihar, Delhi, Delhi, India",28.6469,77.3152,0.43,True
+2026-08-23 01:22:39,Ashok Vihar,28.698,77.173,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.698,77.173,0.77,True
+2026-08-23 01:22:39,Bawana,28.7996,77.0339,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7996,77.0339,2.91,False
+2026-08-23 01:22:39,Dwarka,28.573,77.041,72,Satisfactory,"National Institute of Malaria Research, Sector 8, Dwarka, Delhi, Delhi, India",28.573,77.041,3.44,False
+2026-08-23 01:22:39,Jahangirpuri,28.728,77.1636,147,Moderate,"ITI Jahangirpuri, Delhi, Delhi, India",28.728,77.1636,0.99,True
+2026-08-23 01:22:39,Mundka,28.6828,76.9821,74,Satisfactory,"Mundka, Delhi, Delhi, India",28.6828,76.9821,4.72,False
+2026-08-23 01:22:39,Narela,28.8553,77.0888,78,Satisfactory,"Narela, Delhi, Delhi, India",28.8553,77.0888,4.04,False
+2026-08-23 01:22:39,Okhla,28.5355,77.291,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.291,2.04,False
+2026-08-23 01:22:39,Punjabi Bagh,28.6692,77.1341,74,Satisfactory,"Punjabi Bagh, Delhi, Delhi, India",28.6692,77.1341,1.7,True
+2026-08-23 01:22:39,R.K. Puram,28.5641,77.1765,118,Moderate,"R.K. Puram, Delhi, Delhi, India",28.5641,77.1765,0.22,True
+2026-08-23 01:22:39,Rohini,28.7495,77.0565,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7495,77.0565,3.09,False
+2026-08-23 01:22:39,Vivek Vihar,28.672,77.3152,68,Satisfactory,"ITI Shahdra, Jhilmil Industrial Area, Delhi, Delhi, India",28.672,77.3152,0.13,True
+2026-08-23 01:22:39,Wazirpur,28.7041,77.1663,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.7041,77.1663,0.41,True
+2026-08-23 01:22:39,Chandni Chowk,28.6506,77.2303,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6506,77.2303,3.44,False
+2026-08-23 01:22:39,Red Fort,28.6562,77.241,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6562,77.241,4.65,False
+2026-08-23 01:22:39,Connaught Place,28.6315,77.2167,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6315,77.2167,1.61,True
+2026-08-23 03:43:34,Delhi,28.7041,77.1025,153,Moderate,"Shaheed Sukhdev College of Business Studies, Rohini, Delhi, Delhi, India",28.7041,77.1025,3.56,False
+2026-08-23 03:43:34,Faridabad,28.4089,77.3178,92,Satisfactory,"Dr. Karni Singh Shooting Range, Delhi, Delhi, India",28.4089,77.3178,11.25,False
+2026-08-23 03:43:34,Noida,28.5355,77.391,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.391,11.76,False
+2026-08-23 03:43:34,Anand Vihar,28.6469,77.3152,153,Moderate,"Anand Vihar, Delhi, Delhi, India",28.6469,77.3152,0.43,True
+2026-08-23 03:43:34,Ashok Vihar,28.698,77.173,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.698,77.173,0.77,True
+2026-08-23 03:43:34,Bawana,28.7996,77.0339,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7996,77.0339,2.91,False
+2026-08-23 03:43:34,Dwarka,28.573,77.041,72,Satisfactory,"National Institute of Malaria Research, Sector 8, Dwarka, Delhi, Delhi, India",28.573,77.041,3.44,False
+2026-08-23 03:43:34,Jahangirpuri,28.728,77.1636,147,Moderate,"ITI Jahangirpuri, Delhi, Delhi, India",28.728,77.1636,0.99,True
+2026-08-23 03:43:34,Mundka,28.6828,76.9821,74,Satisfactory,"Mundka, Delhi, Delhi, India",28.6828,76.9821,4.72,False
+2026-08-23 03:43:34,Narela,28.8553,77.0888,78,Satisfactory,"Narela, Delhi, Delhi, India",28.8553,77.0888,4.04,False
+2026-08-23 03:43:34,Okhla,28.5355,77.291,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.291,2.04,False
+2026-08-23 03:43:34,Punjabi Bagh,28.6692,77.1341,74,Satisfactory,"Punjabi Bagh, Delhi, Delhi, India",28.6692,77.1341,1.7,True
+2026-08-23 03:43:34,R.K. Puram,28.5641,77.1765,118,Moderate,"R.K. Puram, Delhi, Delhi, India",28.5641,77.1765,0.22,True
+2026-08-23 03:43:34,Rohini,28.7495,77.0565,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7495,77.0565,3.09,False
+2026-08-23 03:43:34,Vivek Vihar,28.672,77.3152,68,Satisfactory,"ITI Shahdra, Jhilmil Industrial Area, Delhi, Delhi, India",28.672,77.3152,0.13,True
+2026-08-23 03:43:34,Wazirpur,28.7041,77.1663,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.7041,77.1663,0.41,True
+2026-08-23 03:43:34,Chandni Chowk,28.6506,77.2303,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6506,77.2303,3.44,False
+2026-08-23 03:43:34,Red Fort,28.6562,77.241,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6562,77.241,4.65,False
+2026-08-23 03:43:34,Connaught Place,28.6315,77.2167,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6315,77.2167,1.61,True
+2026-08-23 12:56:57,Delhi,28.7041,77.1025,153,Moderate,"Shaheed Sukhdev College of Business Studies, Rohini, Delhi, Delhi, India",28.7041,77.1025,3.56,False
+2026-08-23 12:56:57,Faridabad,28.4089,77.3178,92,Satisfactory,"Dr. Karni Singh Shooting Range, Delhi, Delhi, India",28.4089,77.3178,11.25,False
+2026-08-23 12:56:57,Noida,28.5355,77.391,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.391,11.76,False
+2026-08-23 12:56:57,Anand Vihar,28.6469,77.3152,153,Moderate,"Anand Vihar, Delhi, Delhi, India",28.6469,77.3152,0.43,True
+2026-08-23 12:56:57,Ashok Vihar,28.698,77.173,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.698,77.173,0.77,True
+2026-08-23 12:56:57,Bawana,28.7996,77.0339,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7996,77.0339,2.91,False
+2026-08-23 12:56:57,Dwarka,28.573,77.041,72,Satisfactory,"National Institute of Malaria Research, Sector 8, Dwarka, Delhi, Delhi, India",28.573,77.041,3.44,False
+2026-08-23 12:56:57,Jahangirpuri,28.728,77.1636,147,Moderate,"ITI Jahangirpuri, Delhi, Delhi, India",28.728,77.1636,0.99,True
+2026-08-23 12:56:57,Mundka,28.6828,76.9821,74,Satisfactory,"Mundka, Delhi, Delhi, India",28.6828,76.9821,4.72,False
+2026-08-23 12:56:57,Narela,28.8553,77.0888,78,Satisfactory,"Narela, Delhi, Delhi, India",28.8553,77.0888,4.04,False
+2026-08-23 12:56:57,Okhla,28.5355,77.291,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.291,2.04,False
+2026-08-23 12:56:57,Punjabi Bagh,28.6692,77.1341,74,Satisfactory,"Punjabi Bagh, Delhi, Delhi, India",28.6692,77.1341,1.7,True
+2026-08-23 12:56:57,R.K. Puram,28.5641,77.1765,118,Moderate,"R.K. Puram, Delhi, Delhi, India",28.5641,77.1765,0.22,True
+2026-08-23 12:56:57,Rohini,28.7495,77.0565,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7495,77.0565,3.09,False
+2026-08-23 12:56:57,Vivek Vihar,28.672,77.3152,68,Satisfactory,"ITI Shahdra, Jhilmil Industrial Area, Delhi, Delhi, India",28.672,77.3152,0.13,True
+2026-08-23 12:56:57,Wazirpur,28.7041,77.1663,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.7041,77.1663,0.41,True
+2026-08-23 12:56:57,Chandni Chowk,28.6506,77.2303,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6506,77.2303,3.44,False
+2026-08-23 12:56:57,Red Fort,28.6562,77.241,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6562,77.241,4.65,False
+2026-08-23 12:56:57,Connaught Place,28.6315,77.2167,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6315,77.2167,1.61,True
+2026-08-23 13:49:18,Delhi,28.7041,77.1025,153,Moderate,"Shaheed Sukhdev College of Business Studies, Rohini, Delhi, Delhi, India",28.7041,77.1025,3.56,False
+2026-08-23 13:49:18,Faridabad,28.4089,77.3178,92,Satisfactory,"Dr. Karni Singh Shooting Range, Delhi, Delhi, India",28.4089,77.3178,11.25,False
+2026-08-23 13:49:18,Noida,28.5355,77.391,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.391,11.76,False
+2026-08-23 13:49:18,Anand Vihar,28.6469,77.3152,153,Moderate,"Anand Vihar, Delhi, Delhi, India",28.6469,77.3152,0.43,True
+2026-08-23 13:49:18,Ashok Vihar,28.698,77.173,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.698,77.173,0.77,True
+2026-08-23 13:49:18,Bawana,28.7996,77.0339,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7996,77.0339,2.91,False
+2026-08-23 13:49:18,Dwarka,28.573,77.041,72,Satisfactory,"National Institute of Malaria Research, Sector 8, Dwarka, Delhi, Delhi, India",28.573,77.041,3.44,False
+2026-08-23 13:49:18,Jahangirpuri,28.728,77.1636,147,Moderate,"ITI Jahangirpuri, Delhi, Delhi, India",28.728,77.1636,0.99,True
+2026-08-23 13:49:18,Mundka,28.6828,76.9821,74,Satisfactory,"Mundka, Delhi, Delhi, India",28.6828,76.9821,4.72,False
+2026-08-23 13:49:18,Narela,28.8553,77.0888,78,Satisfactory,"Narela, Delhi, Delhi, India",28.8553,77.0888,4.04,False
+2026-08-23 13:49:18,Okhla,28.5355,77.291,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.291,2.04,False
+2026-08-23 13:49:18,Punjabi Bagh,28.6692,77.1341,74,Satisfactory,"Punjabi Bagh, Delhi, Delhi, India",28.6692,77.1341,1.7,True
+2026-08-23 13:49:18,R.K. Puram,28.5641,77.1765,118,Moderate,"R.K. Puram, Delhi, Delhi, India",28.5641,77.1765,0.22,True
+2026-08-23 13:49:18,Rohini,28.7495,77.0565,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7495,77.0565,3.09,False
+2026-08-23 13:49:18,Vivek Vihar,28.672,77.3152,68,Satisfactory,"ITI Shahdra, Jhilmil Industrial Area, Delhi, Delhi, India",28.672,77.3152,0.13,True
+2026-08-23 13:49:18,Wazirpur,28.7041,77.1663,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.7041,77.1663,0.41,True
+2026-08-23 13:49:18,Chandni Chowk,28.6506,77.2303,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6506,77.2303,3.44,False
+2026-08-23 13:49:18,Red Fort,28.6562,77.241,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6562,77.241,4.65,False
+2026-08-23 13:49:18,Connaught Place,28.6315,77.2167,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6315,77.2167,1.61,True
+2026-08-23 14:20:27,Delhi,28.7041,77.1025,153,Moderate,"Shaheed Sukhdev College of Business Studies, Rohini, Delhi, Delhi, India",28.7041,77.1025,3.56,False
+2026-08-23 14:20:27,Faridabad,28.4089,77.3178,92,Satisfactory,"Dr. Karni Singh Shooting Range, Delhi, Delhi, India",28.4089,77.3178,11.25,False
+2026-08-23 14:20:27,Noida,28.5355,77.391,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.391,11.76,False
+2026-08-23 14:20:27,Anand Vihar,28.6469,77.3152,153,Moderate,"Anand Vihar, Delhi, Delhi, India",28.6469,77.3152,0.43,True
+2026-08-23 14:20:27,Ashok Vihar,28.698,77.173,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.698,77.173,0.77,True
+2026-08-23 14:20:27,Bawana,28.7996,77.0339,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7996,77.0339,2.91,False
+2026-08-23 14:20:27,Dwarka,28.573,77.041,72,Satisfactory,"National Institute of Malaria Research, Sector 8, Dwarka, Delhi, Delhi, India",28.573,77.041,3.44,False
+2026-08-23 14:20:27,Jahangirpuri,28.728,77.1636,147,Moderate,"ITI Jahangirpuri, Delhi, Delhi, India",28.728,77.1636,0.99,True
+2026-08-23 14:20:27,Mundka,28.6828,76.9821,74,Satisfactory,"Mundka, Delhi, Delhi, India",28.6828,76.9821,4.72,False
+2026-08-23 14:20:27,Narela,28.8553,77.0888,78,Satisfactory,"Narela, Delhi, Delhi, India",28.8553,77.0888,4.04,False
+2026-08-23 14:20:27,Okhla,28.5355,77.291,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.291,2.04,False
+2026-08-23 14:20:27,Punjabi Bagh,28.6692,77.1341,74,Satisfactory,"Punjabi Bagh, Delhi, Delhi, India",28.6692,77.1341,1.7,True
+2026-08-23 14:20:27,R.K. Puram,28.5641,77.1765,118,Moderate,"R.K. Puram, Delhi, Delhi, India",28.5641,77.1765,0.22,True
+2026-08-23 14:20:27,Rohini,28.7495,77.0565,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7495,77.0565,3.09,False
+2026-08-23 14:20:27,Vivek Vihar,28.672,77.3152,68,Satisfactory,"ITI Shahdra, Jhilmil Industrial Area, Delhi, Delhi, India",28.672,77.3152,0.13,True
+2026-08-23 14:20:27,Wazirpur,28.7041,77.1663,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.7041,77.1663,0.41,True
+2026-08-23 14:20:27,Chandni Chowk,28.6506,77.2303,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6506,77.2303,3.44,False
+2026-08-23 14:20:27,Red Fort,28.6562,77.241,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6562,77.241,4.65,False
+2026-08-23 14:20:27,Connaught Place,28.6315,77.2167,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6315,77.2167,1.61,True
+2026-08-23 14:51:23,Delhi,28.7041,77.1025,153,Moderate,"Shaheed Sukhdev College of Business Studies, Rohini, Delhi, Delhi, India",28.7041,77.1025,3.56,False
+2026-08-23 14:51:23,Faridabad,28.4089,77.3178,92,Satisfactory,"Dr. Karni Singh Shooting Range, Delhi, Delhi, India",28.4089,77.3178,11.25,False
+2026-08-23 14:51:23,Noida,28.5355,77.391,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.391,11.76,False
+2026-08-23 14:51:23,Anand Vihar,28.6469,77.3152,153,Moderate,"Anand Vihar, Delhi, Delhi, India",28.6469,77.3152,0.43,True
+2026-08-23 14:51:23,Ashok Vihar,28.698,77.173,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.698,77.173,0.77,True
+2026-08-23 14:51:23,Bawana,28.7996,77.0339,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7996,77.0339,2.91,False
+2026-08-23 14:51:23,Dwarka,28.573,77.041,72,Satisfactory,"National Institute of Malaria Research, Sector 8, Dwarka, Delhi, Delhi, India",28.573,77.041,3.44,False
+2026-08-23 14:51:23,Jahangirpuri,28.728,77.1636,147,Moderate,"ITI Jahangirpuri, Delhi, Delhi, India",28.728,77.1636,0.99,True
+2026-08-23 14:51:23,Mundka,28.6828,76.9821,74,Satisfactory,"Mundka, Delhi, Delhi, India",28.6828,76.9821,4.72,False
+2026-08-23 14:51:23,Narela,28.8553,77.0888,78,Satisfactory,"Narela, Delhi, Delhi, India",28.8553,77.0888,4.04,False
+2026-08-23 14:51:23,Okhla,28.5355,77.291,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.291,2.04,False
+2026-08-23 14:51:23,Punjabi Bagh,28.6692,77.1341,74,Satisfactory,"Punjabi Bagh, Delhi, Delhi, India",28.6692,77.1341,1.7,True
+2026-08-23 14:51:23,R.K. Puram,28.5641,77.1765,118,Moderate,"R.K. Puram, Delhi, Delhi, India",28.5641,77.1765,0.22,True
+2026-08-23 14:51:23,Rohini,28.7495,77.0565,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7495,77.0565,3.09,False
+2026-08-23 14:51:23,Vivek Vihar,28.672,77.3152,68,Satisfactory,"ITI Shahdra, Jhilmil Industrial Area, Delhi, Delhi, India",28.672,77.3152,0.13,True
+2026-08-23 14:51:23,Wazirpur,28.7041,77.1663,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.7041,77.1663,0.41,True
+2026-08-23 14:51:23,Chandni Chowk,28.6506,77.2303,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6506,77.2303,3.44,False
+2026-08-23 14:51:23,Red Fort,28.6562,77.241,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6562,77.241,4.65,False
+2026-08-23 14:51:23,Connaught Place,28.6315,77.2167,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6315,77.2167,1.61,True
+2026-08-23 15:22:40,Delhi,28.7041,77.1025,153,Moderate,"Shaheed Sukhdev College of Business Studies, Rohini, Delhi, Delhi, India",28.7041,77.1025,3.56,False
+2026-08-23 15:22:40,Faridabad,28.4089,77.3178,92,Satisfactory,"Dr. Karni Singh Shooting Range, Delhi, Delhi, India",28.4089,77.3178,11.25,False
+2026-08-23 15:22:40,Noida,28.5355,77.391,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.391,11.76,False
+2026-08-23 15:22:40,Anand Vihar,28.6469,77.3152,153,Moderate,"Anand Vihar, Delhi, Delhi, India",28.6469,77.3152,0.43,True
+2026-08-23 15:22:40,Ashok Vihar,28.698,77.173,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.698,77.173,0.77,True
+2026-08-23 15:22:40,Bawana,28.7996,77.0339,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7996,77.0339,2.91,False
+2026-08-23 15:22:40,Dwarka,28.573,77.041,72,Satisfactory,"National Institute of Malaria Research, Sector 8, Dwarka, Delhi, Delhi, India",28.573,77.041,3.44,False
+2026-08-23 15:22:40,Jahangirpuri,28.728,77.1636,147,Moderate,"ITI Jahangirpuri, Delhi, Delhi, India",28.728,77.1636,0.99,True
+2026-08-23 15:22:40,Mundka,28.6828,76.9821,74,Satisfactory,"Mundka, Delhi, Delhi, India",28.6828,76.9821,4.72,False
+2026-08-23 15:22:40,Narela,28.8553,77.0888,78,Satisfactory,"Narela, Delhi, Delhi, India",28.8553,77.0888,4.04,False
+2026-08-23 15:22:40,Okhla,28.5355,77.291,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.291,2.04,False
+2026-08-23 15:22:40,Punjabi Bagh,28.6692,77.1341,74,Satisfactory,"Punjabi Bagh, Delhi, Delhi, India",28.6692,77.1341,1.7,True
+2026-08-23 15:22:40,R.K. Puram,28.5641,77.1765,118,Moderate,"R.K. Puram, Delhi, Delhi, India",28.5641,77.1765,0.22,True
+2026-08-23 15:22:40,Rohini,28.7495,77.0565,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7495,77.0565,3.09,False
+2026-08-23 15:22:40,Vivek Vihar,28.672,77.3152,68,Satisfactory,"ITI Shahdra, Jhilmil Industrial Area, Delhi, Delhi, India",28.672,77.3152,0.13,True
+2026-08-23 15:22:40,Wazirpur,28.7041,77.1663,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.7041,77.1663,0.41,True
+2026-08-23 15:22:40,Chandni Chowk,28.6506,77.2303,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6506,77.2303,3.44,False
+2026-08-23 15:22:40,Red Fort,28.6562,77.241,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6562,77.241,4.65,False
+2026-08-23 15:22:40,Connaught Place,28.6315,77.2167,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6315,77.2167,1.61,True
+2026-08-23 15:54:51,Delhi,28.7041,77.1025,153,Moderate,"Shaheed Sukhdev College of Business Studies, Rohini, Delhi, Delhi, India",28.7041,77.1025,3.56,False
+2026-08-23 15:54:51,Faridabad,28.4089,77.3178,92,Satisfactory,"Dr. Karni Singh Shooting Range, Delhi, Delhi, India",28.4089,77.3178,11.25,False
+2026-08-23 15:54:51,Noida,28.5355,77.391,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.391,11.76,False
+2026-08-23 15:54:51,Anand Vihar,28.6469,77.3152,153,Moderate,"Anand Vihar, Delhi, Delhi, India",28.6469,77.3152,0.43,True
+2026-08-23 15:54:51,Ashok Vihar,28.698,77.173,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.698,77.173,0.77,True
+2026-08-23 15:54:51,Bawana,28.7996,77.0339,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7996,77.0339,2.91,False
+2026-08-23 15:54:51,Dwarka,28.573,77.041,72,Satisfactory,"National Institute of Malaria Research, Sector 8, Dwarka, Delhi, Delhi, India",28.573,77.041,3.44,False
+2026-08-23 15:54:51,Jahangirpuri,28.728,77.1636,147,Moderate,"ITI Jahangirpuri, Delhi, Delhi, India",28.728,77.1636,0.99,True
+2026-08-23 15:54:51,Mundka,28.6828,76.9821,74,Satisfactory,"Mundka, Delhi, Delhi, India",28.6828,76.9821,4.72,False
+2026-08-23 15:54:51,Narela,28.8553,77.0888,78,Satisfactory,"Narela, Delhi, Delhi, India",28.8553,77.0888,4.04,False
+2026-08-23 15:54:51,Okhla,28.5355,77.291,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.291,2.04,False
+2026-08-23 15:54:51,Punjabi Bagh,28.6692,77.1341,74,Satisfactory,"Punjabi Bagh, Delhi, Delhi, India",28.6692,77.1341,1.7,True
+2026-08-23 15:54:51,R.K. Puram,28.5641,77.1765,118,Moderate,"R.K. Puram, Delhi, Delhi, India",28.5641,77.1765,0.22,True
+2026-08-23 15:54:51,Rohini,28.7495,77.0565,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7495,77.0565,3.09,False
+2026-08-23 15:54:51,Vivek Vihar,28.672,77.3152,68,Satisfactory,"ITI Shahdra, Jhilmil Industrial Area, Delhi, Delhi, India",28.672,77.3152,0.13,True
+2026-08-23 15:54:51,Wazirpur,28.7041,77.1663,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.7041,77.1663,0.41,True
+2026-08-23 15:54:51,Chandni Chowk,28.6506,77.2303,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6506,77.2303,3.44,False
+2026-08-23 15:54:51,Red Fort,28.6562,77.241,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6562,77.241,4.65,False
+2026-08-23 15:54:51,Connaught Place,28.6315,77.2167,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6315,77.2167,1.61,True
+2026-08-23 16:26:16,Delhi,28.7041,77.1025,153,Moderate,"Shaheed Sukhdev College of Business Studies, Rohini, Delhi, Delhi, India",28.7041,77.1025,3.56,False
+2026-08-23 16:26:16,Faridabad,28.4089,77.3178,92,Satisfactory,"Dr. Karni Singh Shooting Range, Delhi, Delhi, India",28.4089,77.3178,11.25,False
+2026-08-23 16:26:16,Noida,28.5355,77.391,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.391,11.76,False
+2026-08-23 16:26:16,Anand Vihar,28.6469,77.3152,153,Moderate,"Anand Vihar, Delhi, Delhi, India",28.6469,77.3152,0.43,True
+2026-08-23 16:26:16,Ashok Vihar,28.698,77.173,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.698,77.173,0.77,True
+2026-08-23 16:26:16,Bawana,28.7996,77.0339,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7996,77.0339,2.91,False
+2026-08-23 16:26:16,Dwarka,28.573,77.041,72,Satisfactory,"National Institute of Malaria Research, Sector 8, Dwarka, Delhi, Delhi, India",28.573,77.041,3.44,False
+2026-08-23 16:26:16,Jahangirpuri,28.728,77.1636,147,Moderate,"ITI Jahangirpuri, Delhi, Delhi, India",28.728,77.1636,0.99,True
+2026-08-23 16:26:16,Mundka,28.6828,76.9821,74,Satisfactory,"Mundka, Delhi, Delhi, India",28.6828,76.9821,4.72,False
+2026-08-23 16:26:16,Narela,28.8553,77.0888,78,Satisfactory,"Narela, Delhi, Delhi, India",28.8553,77.0888,4.04,False
+2026-08-23 16:26:16,Okhla,28.5355,77.291,87,Satisfactory,"DITE Okhla, Delhi, Delhi, India",28.5355,77.291,2.04,False
+2026-08-23 16:26:16,Punjabi Bagh,28.6692,77.1341,74,Satisfactory,"Punjabi Bagh, Delhi, Delhi, India",28.6692,77.1341,1.7,True
+2026-08-23 16:26:16,R.K. Puram,28.5641,77.1765,118,Moderate,"R.K. Puram, Delhi, Delhi, India",28.5641,77.1765,0.22,True
+2026-08-23 16:26:16,Rohini,28.7495,77.0565,167,Moderate,"Pooth Khurd, Bawana, Delhi, Delhi, India",28.7495,77.0565,3.09,False
+2026-08-23 16:26:16,Vivek Vihar,28.672,77.3152,68,Satisfactory,"ITI Shahdra, Jhilmil Industrial Area, Delhi, Delhi, India",28.672,77.3152,0.13,True
+2026-08-23 16:26:16,Wazirpur,28.7041,77.1663,126,Moderate,"Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",28.7041,77.1663,0.41,True
+2026-08-23 16:26:16,Chandni Chowk,28.6506,77.2303,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6506,77.2303,3.44,False
+2026-08-23 16:26:16,Red Fort,28.6562,77.241,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6562,77.241,4.65,False
+2026-08-23 16:26:16,Connaught Place,28.6315,77.2167,142,Moderate,"Mandir Marg, Delhi, Delhi, India",28.6315,77.2167,1.61,True

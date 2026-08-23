@@ -2,35 +2,39 @@
 venv/
 .venv/
 env/
-
+ 
 __pycache__/
 *.pyc
 *.pyo
-
+ 
 # Environment
 .env
-
+ 
 # Node
 node_modules/
-
+ 
 # VS Code
 .vscode/
-
+ 
 # Build
 dist/
 build/
-
+ 
 # Logs
 *.log
-
+ 
 # Generated CSV files
-live_ground_aqi_log.csv
-live_pollutants_log.csv
-weather_current_log.csv
-weather_forecast_log.csv
-traffic_log.csv
-processed_aqi_data.csv
-
+# -- Commented out ON PURPOSE for Render free-tier deployment: Render has
+# -- no way to run background collector scripts, so these committed CSVs
+# -- act as a static data snapshot for the deployed demo. Uncomment these
+# -- again if/when moving to a host that supports background workers.
+# live_ground_aqi_log.csv
+# live_pollutants_log.csv
+# weather_current_log.csv
+# weather_forecast_log.csv
+# traffic_log.csv
+# processed_aqi_data.csv
+ 
 # Operating System
 .DS_Store
 Thumbs.db

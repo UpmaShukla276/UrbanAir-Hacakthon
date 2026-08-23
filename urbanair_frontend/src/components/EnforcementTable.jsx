@@ -11,7 +11,7 @@ export default function EnforcementTable({ data, onRefresh, refreshing }) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
         <h3 style={{ fontFamily: "var(--font-display)", fontSize: 15, margin: 0 }}>
-          Enforcement Priority Ranking
+          Enforcement
         </h3>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--text-tertiary)" }}>

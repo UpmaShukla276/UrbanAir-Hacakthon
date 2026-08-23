@@ -75,6 +75,30 @@ function regionForWind(deg) {
   return COMPASS_REGION[degToCompass(deg)];
 }
 
+// Short, direction-specific "why this matters + what to do" line.
+const COMPASS_ADVISORY = {
+  N: "Can carry industrial haze and crop-residue smoke from Panipat/Sonipat — keep windows shut during peak hours.",
+  NNE: "Usually cleaner hill air, but can carry forest-fire smoke in dry months.",
+  NE: "Industrial and vehicular pollution from western UP — sensitive groups should limit outdoor exertion.",
+  ENE: "Mixed industrial and vehicular haze from western UP.",
+  E: "Dense urban and vehicular pollution from Ghaziabad/Noida — an N95 mask outdoors is a good idea.",
+  ESE: "Urban and construction dust from the Greater Noida belt.",
+  SE: "Mixed dust and industrial haze from the UP–Rajasthan border.",
+  SSE: "Dry, dusty air from Rajasthan's Alwar side — keep windows shut if it looks hazy.",
+  S: "Urban, traffic and construction dust from Faridabad/Gurugram.",
+  SSW: "Dry, dusty air off the Haryana–Rajasthan border.",
+  SW: "Dry, sandy dust from Rajasthan's Aravalli belt — expect gritty haze; mask up if visibility drops.",
+  WSW: "Dry dust from the Rewari side of Rajasthan.",
+  W: "Agricultural dust from Rohtak/Jhajjar, can spike PM10.",
+  WNW: "Agricultural dust from Bhiwani, occasionally mixed with early-season stubble smoke.",
+  NW: "Peak stubble-burning route into Delhi — expect sharp PM2.5 spikes on smoky days; N95 mask + indoor air purifier advised.",
+  NNW: "Direct route from Punjab's stubble belt — high PM2.5 risk; limit outdoor time on hazy days.",
+};
+
+function advisoryForWind(deg) {
+  return COMPASS_ADVISORY[degToCompass(deg)];
+}
+
 // Punjab/Haryana stubble belt sits roughly NW of Delhi NCR -- same 315°
 // reference bearing the backend uses for its seasonal waste-burning heuristic.
 function isUpwindFromStubbleBelt(windDeg) {
@@ -88,6 +112,7 @@ export default function MapView({ cityReadings, selectedCity, onSelectCity, wind
   const [probeData, setProbeData] = useState(null);
   const [probeLoading, setProbeLoading] = useState(false);
   const [flyTarget, setFlyTarget] = useState(null);
+  const [showWindAdvisory, setShowWindAdvisory] = useState(false);
 
   const toggleLayer = async (key) => {
     const isActive = !activeLayers[key];
@@ -130,9 +155,9 @@ export default function MapView({ cityReadings, selectedCity, onSelectCity, wind
         style={{ height: "100%", width: "100%", background: "#F7F3DD" }}
         zoomControl={true}
       >
-                <TileLayer
+        <TileLayer
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; OpenStreetMap &copy; CARTO'
+          attribution=""
         />
 
         <ClickHandler onMapClick={(lat, lon) => probeLocation(lat, lon, null)} />
@@ -317,6 +342,7 @@ export default function MapView({ cityReadings, selectedCity, onSelectCity, wind
             <div style={{ color: "var(--text-tertiary)", marginTop: 1 }}>
               Blowing in from {regionForWind(windData.raw_signals.wind_deg)}
             </div>
+            
             <div style={{ marginTop: 4, color: "var(--text-tertiary)" }}>
               {isUpwindFromStubbleBelt(windData.raw_signals.wind_deg) && windData.raw_signals.is_stubble_burning_season ? (
                 <>
@@ -327,6 +353,43 @@ export default function MapView({ cityReadings, selectedCity, onSelectCity, wind
                 <>Regional Background is {windData.sources.background_pct}% of {windData.point}'s pollution right now.</>
               )}
             </div>
+
+            <div
+              onClick={() => setShowWindAdvisory((v) => !v)}
+              style={{
+                marginTop: 4,
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                cursor: "pointer",
+                color: "var(--accent)",
+                fontWeight: 600,
+                userSelect: "none",
+              }}
+            >
+              <span
+                style={{
+                  width: 13,
+                  height: 13,
+                  borderRadius: "50%",
+                  border: "1px solid var(--accent)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 9,
+                  lineHeight: 1,
+                }}
+              >
+                {showWindAdvisory ? "−" : "+"}
+              </span>
+              <span>{showWindAdvisory ? "Hide precautions" : "What should I do?"}</span>
+            </div>
+            {showWindAdvisory && (
+              <div style={{ marginTop: 3, color: "var(--text-secondary)", fontStyle: "italic" }}>
+                {advisoryForWind(windData.raw_signals.wind_deg)}
+              </div>
+            )}
+            
           </div>
         </div>
       )}

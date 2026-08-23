@@ -56,17 +56,9 @@ const QUESTIONS = [
     accentColor: "var(--aqi-poor)",
     content: (
       <>
-        <div style={{ marginBottom: 10 }}>
-          This is a <strong style={{ color: "var(--text-primary)" }}>transparent rule-based
-          engine</strong>, not a trained ML classifier — there's no labeled
-          "true pollution source" dataset to train against, and
-          real-world agencies (CPCB/SAFAR) use similar rule +
-          dispersion-model hybrids, not pure ML either.
-        </div>
         <div>
-          Every weight is a documented assumption based on known
-          atmospheric behavior, not a fitted parameter — inspectable,
-          not a black box.
+          The breakdown is based on the current pollution mix for the selected area,
+          combining local activity signals with dispersion conditions and seasonal context.
         </div>
       </>
     ),

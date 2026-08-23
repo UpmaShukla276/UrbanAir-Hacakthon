@@ -38,13 +38,10 @@ export default function SourceAttributionChart({ data }) {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
+      <div style={{ marginBottom: 16 }}>
         <h3 style={{ fontFamily: "var(--font-display)", fontSize: 17, margin: 0 }}>
           Source Attribution — {data.point}
         </h3>
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--text-tertiary)" }}>
-          rule-based · explainable
-        </span>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "0.5cm", flexWrap: "wrap" }}>
@@ -83,11 +80,6 @@ export default function SourceAttributionChart({ data }) {
             </div>
           ))}
         </div>
-      </div>
-
-      <div style={{ marginTop: 16, padding: "10px 14px", background: "var(--bg-panel-raised)", borderRadius: 8, fontSize: 11.5, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
-        Wind {data.raw_signals.wind_speed_mps} m/s @ {data.raw_signals.wind_deg}° · Congestion ratio {data.raw_signals.congestion_ratio}
-        {data.raw_signals.is_stubble_burning_season && " · Stubble-burning season active"}
       </div>
     </div>
   );

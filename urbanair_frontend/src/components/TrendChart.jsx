@@ -59,6 +59,7 @@ export default function TrendChart({ data }) {
             interval={Math.floor(data.length / 6)}
           />
           <YAxis
+            domain={[0, (dataMax) => Math.max(dataMax * 1.5, 100)]}
             stroke="var(--text-tertiary)"
             fontSize={11}
             fontFamily="var(--font-mono)"

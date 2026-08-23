@@ -63,7 +63,7 @@ export default function GrapSummaryBanner({ data }) {
           background: "rgba(255,122,0,0.08)", border: "1px solid #FF7A00",
           borderRadius: "var(--radius-md)", padding: "10px 16px", fontSize: 13, color: "#FF7A00",
         }}>
-          ⚠ {escalatingCount} zone{escalatingCount > 1 ? "s" : ""} will cross into a higher stage within 24h — act before it arrives
+          ⚠ {escalatingCount} zone{escalatingCount > 1 ? "s" : ""} are moving into a higher stage — act before it arrives
         </div>
       )}
     </div>

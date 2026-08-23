@@ -67,23 +67,20 @@ export default function GrapInfoPanel() {
 
         <Section label="How it's calculated" accentColor="var(--accent-dim)">
           <div style={{ marginBottom: 10 }}>
-            Each zone's <strong style={{ color: "var(--text-primary)" }}>current AQI</strong> and{" "}
-            <strong style={{ color: "var(--text-primary)" }}>24h forecast</strong> are both
-            checked against CAQM's stage bands. Whichever is higher decides
-            the stage shown.
+            Each zone's <strong style={{ color: "var(--text-primary)" }}>current AQI</strong> is
+            checked against CAQM's stage bands to determine the stage shown.
           </div>
           <div>
             This mirrors CAQM's real protocol: a stage is invoked{" "}
-            <strong style={{ color: "var(--text-primary)" }}>proactively</strong> when a
-            higher AQI is forecast to sustain — not only after it's
-            already happened.
+            <strong style={{ color: "var(--text-primary)" }}>proactively</strong> when
+            conditions are trending into a higher-risk band before it is already happening.
           </div>
         </Section>
 
         <Section label="Reading the badges" accentColor="var(--aqi-poor)">
           A grey "No GRAP stage" badge means AQI is below 201 — good news,
           no restrictions apply. An orange/red badge names the active
-          stage. A ⚠ warning means the +24h forecast crosses into a
+          stage. A ⚠ warning means conditions are moving into a
           higher stage than right now — act before it arrives.
         </Section>
       </div>

@@ -34,14 +34,6 @@ export default function HealthAdvisoryPanel({ data }) {
         </div>
       </div>
 
-      <div style={{ fontSize: 11, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", marginBottom: 8 }}>
-        FORECAST ADVISORY
-      </div>
-      {data.forecast_is_warming_up && (
-        <div style={{ fontSize: 10.5, color: "var(--aqi-moderate)", fontFamily: "var(--font-mono)", marginBottom: 8 }}>
-          ⚠ Forecast has limited confidence — still collecting the live history the model needs. Current AQI above is always live and reliable.
-        </div>
-      )}
       <div style={{ display: "flex", gap: 8 }}>
         {data.forecast_advisories.map((f) => {
           const fsev = severityFor(f.predicted_aqi);

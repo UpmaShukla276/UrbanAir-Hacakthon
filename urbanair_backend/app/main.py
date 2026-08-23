@@ -291,7 +291,7 @@ def get_current(city: str):
     # purana number dikhata rahega, jo terminal se match nahi karega.
     if ground_aqi_row is not None:
         age = datetime.now() - ground_aqi_row["timestamp"].to_pydatetime()
-        if age > timedelta(hours=3):
+        if age > timedelta(days=30):
             ground_aqi_row = None
 
         # ----- PRIORITY 1: WAQI ground station -----

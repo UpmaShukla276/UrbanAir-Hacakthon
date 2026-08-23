@@ -39,6 +39,6 @@ jobs:
           git config user.name "aqi-refresh-bot"
           git config user.email "bot@users.noreply.github.com"
           git add aqi_model/*.csv urbanair_backend/*.csv
-          git diff --cached --quiet || git commit -m "Auto-refresh live AQI data"
+          git diff --cached --quiet && echo "No changes" || git commit -m "Auto-refresh live AQI data"
+          git pull --no-edit -X ours origin main
           git push
-          

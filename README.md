@@ -1,25 +1,17 @@
 # UrbanAir AI — Full-Stack Prototype
 
-Delhi NCR air quality monitoring + forecasting + source-attribution
-dashboard. Covers all seven core features from the Feature Freeze doc —
-Live AQI Dashboard, Source Attribution, Enforcement Intelligence, Health
-Advisory, GRAP Compliance, What-if Simulation, and Green Cover Index.
-Only the **Gemini Chat Assistant** remains as future work.
+A Delhi NCR air quality dashboard that does monitoring, forecasting, and source attribution together. It covers all seven core features from our Feature Freeze doc: Live AQI Dashboard, Source Attribution, Enforcement Intelligence, Health Advisory, GRAP Compliance, What-if Simulation, and Green Cover Index. The Gemini Chat Assistant is the one thing we didn't get to.
 
 ## Structure
 
-- urbanair_backend/ ← FastAPI (models + rule engines + data API)
-- urbanair_frontend/ ← React + Leaflet + Recharts dashboard
+- `urbanair_backend/` — FastAPI, models, rule engines, the data API
+- `urbanair_frontend/` — React + Leaflet + Recharts dashboard
 
+## Running it, start to finish
 
-## Run it (full setup, start to end)
+**You'll need:** Python 3.10+ and Node.js 18+. The API keys are already sitting in `.env` files (one in `aqi_model/`, one in `urbanair_backend/`), so there's nothing to sign up for just install and go.
 
-**Prerequisites:** Python 3.10+ and Node.js 18+. API keys are already
-included in `.env` (aqi_model/) and `.env` (urbanair_backend/) — nothing
-to sign up for, just install and run.
-
-You'll end up with **3 terminals running at once** — collectors, backend,
-frontend. Start them in this order.
+You'll end up running **3 terminals at once**: collectors, backend, frontend. Start them in this order.
 
 ### 1. Unzip and go to the project root
 ```bash
@@ -36,14 +28,7 @@ pip install -r requirements.txt
 
 python run_all.py
 ```
-`.env` with the API keys is already in this folder — no setup needed
-there. Leave this running. `run_all.py` starts all 4 collectors (air
-pollution, traffic, weather, WAQI ground AQI) on loop, **and** syncs the
-logs it produces into `urbanair_backend/` every 5 minutes automatically —
-this single command replaces running each collector separately and the
-old `sync_logs.ps1`. Give it a minute or two after first starting so each
-collector has logged at least one row before you open the dashboard —
-the backend returns a 503 for a city until its first live reading lands.
+The `.env` with the API keys is already in this folder, so there's nothing else to set up. Leave this running `run_all.py` starts all four collectors (air pollution, traffic, weather, WAQI ground AQI) on a loop, and syncs whatever they produce into `urbanair_backend/` every 5 minutes. This one command replaces running each collector separately, and it also replaces the old `sync_logs.ps1`. Give it a minute or two on first start so each collector logs at least one row before you open the dashboard, until then the backend just returns a 503 for that city.
 
 ### 3. Terminal 2 — backend (`urbanair_backend/`)
 ```bash
@@ -55,8 +40,7 @@ pip install -r requirements.txt
 
 python -m uvicorn app.main:app --reload --port 8000
 ```
-`.env` (email + Groq arbitration keys) is already included here too —
-nothing else to configure.
+The `.env` here (email + Groq arbitration keys) is also already filled in, nothing to configure.
 
 ### 4. Terminal 3 — frontend (`urbanair_frontend/`)
 ```bash
@@ -66,55 +50,24 @@ npm install
 npm run dev
 ```
 
-Open **http://localhost:5173** — the Vite dev server proxies `/api/*` to
-the FastAPI backend on port 8000 automatically (see `vite.config.js`).
+Open **http://localhost:5173**. The Vite dev server proxies `/api/*` straight to the FastAPI backend on port 8000 — see `vite.config.js` if you're curious how.
 
-### Day-to-day after first setup
-Only Terminal 1 (`python run_all.py`, from inside `aqi_model/` with its
-venv active) needs to be kept running for fresh data — leave it up
-whenever you want the dashboard showing live numbers. Backend and
-frontend can be started/stopped independently of it.
+### Day to day, after the first setup
+Really only Terminal 1 needs to stay running (`python run_all.py`, from inside `aqi_model/`, venv active), that's what keeps the dashboard showing live numbers. Backend and frontend can be started and stopped independently of it and each other.
 
-## What it does
+## What it actually does
 
-Seven tabs, all working at the **21-zone level** (5 cities + 13 official
-CAQM hotspots + 3 landmarks):
+Seven tabs, all working off the same **21 zones**: the 5 trained cities, 13 official CAQM hotspots, and 3 landmarks:
 
-- **Overview** — Map (Leaflet, CARTO basemap) with all 21 monitored
-  points colored by live AQI severity, toggleable layers (parks/
-  industrial/construction/residential/roads), instrument-style AQI
-  gauge, pollutant readings, 24/48/72h forecast panel, 7-day trend
-  chart. Search any location or click anywhere on the map for a
-  hyperlocal estimate — not limited to the 21 pre-registered points.
-- **Source Attribution** — donut chart breaking down Traffic /
-  Industrial / Construction / Waste-Burning / Regional Background %
-  for the selected point, using live traffic congestion + wind
-  direction/speed + proximity to industrial/construction zones + a
-  seasonal stubble-burning heuristic. Includes a compare-all view
-  stacking all 21 points side by side.
-- **Enforcement** — ranked priority list across all 21 monitored
-  points, each with plain-language reasons and recommended actions,
-  driven by forecast severity + source mix + traffic congestion. Each
-  row can generate and send an Official Report + Hinglish Public
-  Advisory alert as a real email.
-- **Health Advisory** — current + forecast CPCB-band health advisory
-  text for general public and sensitive groups.
-- **GRAP Compliance** — AQI (live and forecast) is mapped directly to
-  the real CAQM Graded Response Action Plan stage (I–IV) and its actual
-  mandated actions — halt construction, ban non-essential diesel
-  trucks, odd-even rationing, etc. This isn't an invented severity
-  scale; it's the one Delhi NCR already operates under, so officials
-  don't have to learn a parallel system on top of what they already
-  use.
-- **What-if Simulation** — sliders to simulate reducing Traffic/
-  Industrial/Construction/Waste-Burning by X%, shows before/after AQI
-  and % improvement.
-- **Green Cover Index** — satellite tree cover vs. estimated population
-  for each of the 21 areas, benchmarked against the 9 sq.m/person
-  planning reference, tied to the *Ek Ped Maa Ke Naam* national
-  afforestation campaign.
+- **Overview** — A Leaflet map on a CARTO basemap, all 21 points colored by live AQI severity, with toggleable layers for parks, industrial zones, construction sites, residential areas, and roads. There's an instrument-style AQI gauge, pollutant readings, a 24/48/72h forecast panel, and a 7-day trend chart. You're not limited to the 21 pre-set points either, search any location in the NCR, or just click anywhere on the map for a hyperlocal estimate.
+- **Source Attribution** — A donut chart breaking down where the pollution at a given point is actually coming from: Traffic, Industrial, Construction, Waste-Burning, or Regional Background. It's driven by live traffic congestion, wind direction and speed, proximity to industrial/construction zones, and a seasonal stubble-burning heuristic. There's also a compare-all view that stacks all 21 points side by side.
+- **Enforcement** — A ranked priority list across all 21 points, each with a plain-language reason and a recommended action, driven by forecast severity, source mix, and traffic congestion. Every row has an alert button that can generate and actually send an Official Report plus a Hinglish Public Advisory as a real email.
+- **Health Advisory** — Current and forecast CPCB-band health guidance, split for the general public versus sensitive groups.
+- **GRAP Compliance** — Maps live and forecast AQI directly onto the real CAQM Graded Response Action Plan stages (I–IV) and whatever's actually mandated at that stage — halting construction, banning non-essential diesel trucks, odd-even rationing, and so on. This isn't some invented severity scale we made up; it's the exact framework Delhi NCR already runs on, so officials aren't learning a second system on top of the one they already use.
+- **What-if Simulation** — Sliders to simulate cutting Traffic/Industrial/Construction/Waste-Burning by some percentage, showing the before/after AQI and the % improvement.
+- **Green Cover Index** — Satellite-measured tree cover against estimated population for each of the 21 areas, checked against the commonly cited 9 sq.m/person benchmark, and tied into the *Ek Ped Maa Ke Naam* national afforestation campaign.
 
-## Application Screenshots
+## Screenshots
 
 ### Dashboard
 ![Dashboard](assets/dashboard.png)
@@ -139,56 +92,28 @@ CAQM hotspots + 3 landmarks):
 
 ## Design direction
 
-Built as a control-room / instrumentation interface (not a marketing
-page) since the actual audience is DPCC/MCD officials monitoring live
-conditions: a clean, high-contrast **light base** so severity colors
-still read clearly at a glance, monospace (IBM Plex Mono) for all
-numeric readouts to feel measured, Space Grotesk for headers. The AQI
-severity palette carries real meaning (CPCB bands), kept separate from
-the app's own accent color (teal) so users never confuse "the brand
-color" with "a pollution reading."
+We built this as a control-room instrument panel, not a marketing page, the people actually using it are DPCC/MCD officials trying to read live conditions fast. That's why it's a clean, high-contrast light base, so severity colors still jump out at a glance, monospace (IBM Plex Mono) on every numeric readout so numbers feel measured rather than decorative, and Space Grotesk for headers. The AQI severity palette carries real regulatory meaning (CPCB bands), so we kept it deliberately separate from the app's own teal accent color so nobody should ever confuse "the brand color" with "an actual pollution reading."
 
-## Model performance
+## How well the models actually perform
 
-Two models, two very different bars:
+Two models here, and they're solving very different problems:
 
-- **Nowcast** (pollutants → AQI): R² 0.9999, 99.8% category accuracy.
-  AQI is a formula of pollutant sub-indices, so the model is learning
-  that formula — near-perfect R² is expected here, not a data leak.
-- **Forecast** (24h/48h/72h ahead): R² ~0.68 across all three horizons,
-  trained only on pre-event information (lagged AQI/PM readings,
-  rolling stats correctly shifted so "now" never leaks into its own
-  window). Beats a naive "tomorrow = today" baseline by ~27% at every
-  horizon. This is the number that reflects the model actually learning
-  something rather than recomputing a known formula — lead with this
-  one over the 0.9999 if asked which is harder.
+- **Nowcast** (pollutants → AQI): R² of 0.9999, 99.8% category accuracy. This one's almost expected to be near-perfect, AQI is literally a formula of pollutant sub-indices, so the model is just learning that formula, not really predicting anything.
+- **Forecast** (24h/48h/72h out): R² of about 0.68 across all three horizons, and it's only trained on information that would genuinely be known ahead of time, lagged AQI and PM readings, rolling stats correctly shifted so "now" never leaks into its own window. It beats a naive "tomorrow looks like today" baseline by roughly 27% at every horizon. This is the number that actually reflects the model learning something, rather than recomputing a formula, if someone asks which result is harder, this is the one to point to, not the 0.9999.
 
-## WAQI-vs-model arbitration (Groq)
+## WAQI vs. model arbitration (Groq)
 
-When the live ground-station reading (WAQI) and the model's nowcast
-disagree by more than 15%, a Groq LLM call weighs both against context —
-recent trend, pollutant levels, each source's known error pattern —
-similar to how an analyst would cross-check two instruments. This is a
-**plausibility check, not verified ground truth** (an LLM can't measure
-air). When the two sources already agree, no LLM call happens — WAQI is
-used directly. If the Groq key is missing or the call fails, it falls
-back to WAQI rather than blocking the response. See `groq_arbiter.py`.
+When the live ground-station reading (WAQI) and our model's own estimate disagree by more than 15%, we send both to a Groq LLM call along with some context recent trend, pollutant levels, each source's typical error pattern, and it weighs the two the way an analyst might cross-check two instruments that don't quite agree. Worth being upfront about what this is: it's a plausibility check, not verified ground truth. An LLM can't actually measure air. If the two sources already agree, none of this runs — WAQI is used directly, no API call needed. And if the Groq key is missing or the call fails for any reason, it just falls back to WAQI rather than blocking the request. See `groq_arbiter.py` if you want the details.
 
-## Geospatial data QA
+## A real data bug we caught
 
-The geospatial layers (parks/residential/industrial/roads) were
-originally broken — an Overpass query scoped wrong meant
-`parks.geojson` and `residential.geojson` were actually **Rome,
-Italy**, and `industrial.geojson` / `roads.geojson` were empty. All five
-were re-extracted directly from the regional OSM PBF, clipped to the
-exact bounding box of the pollutant rasters (283,558 roads, 12,641
-major roads, 4,777 parks, 4,166 residential zones, 635 industrial
-zones). See `extract_osm_layers.py`.
+The geospatial layers we started with parks, residential, industrial, roads were quietly broken. An Overpass query got scoped wrong somewhere along the way, so `parks.geojson` and `residential.geojson` were actually mapped to **Rome, Italy**, and `industrial.geojson` and `roads.geojson` came back completely empty. We re-extracted all five layers ourselves, straight from the regional OSM PBF, clipped precisely to the same bounding box as the pollutant rasters: 283,558 roads, 12,641 major roads, 4,777 parks, 4,166 residential zones, 635 industrial zones. Details are in `extract_osm_layers.py`.
 
 ## API endpoints (backend)
 
 | Endpoint | Purpose |
 |---|---|
+| `GET /api/health` | Basic healthcheck |
 | `GET /api/cities` | List of 5 cities + coordinates |
 | `GET /api/current/{city}` | Latest known AQI + pollutants |
 | `POST /api/nowcast` | AQI from manually entered pollutant readings |
@@ -199,12 +124,14 @@ zones). See `extract_osm_layers.py`.
 | `GET /api/source-attribution/{point}` | Same, for one city or hotspot |
 | `GET /api/enforcement` | Ranked priority list with reasons + recommended actions |
 | `GET /api/health-advisory/{city}` | Current + forecast health advisory (CPCB-band text) |
-| `GET /api/grap-compliance` | GRAP stage (current + 24h forecast) for all 21 zones |
+| `GET /api/health-advisory` | Same, for all 21 monitored points at once |
+| `GET /api/grap/{point}` | GRAP stage (current + 24h forecast) for one zone |
+| `GET /api/grap` | Same, for all 21 zones at once |
 | `POST /api/whatif` | Simulate reducing sources by X%, get before/after AQI |
 | `GET /api/green-cover` | Green Cover Index for all 21 areas |
 | `GET /api/green-cover/{point}` | Same, for one area |
 | `GET /api/search-location?query=...` | Free-text geocoding (Nominatim), NCR-bounded |
-| `GET /api/estimate?lat=..&lon=..` | Hyperlocal estimate for ANY point (not just the 21 pre-registered ones) |
+| `GET /api/estimate?lat=..&lon=..` | Hyperlocal estimate for any point, not just the 21 pre-registered ones |
 | `GET /api/alerts/officials/{point}` | Generates structured official-report analysis text |
 | `GET /api/alerts/public/{point}` | Generates short Hinglish public advisory text |
 | `POST /api/alerts/send` | Sends either as an email (needs SMTP configured) |
@@ -212,95 +139,39 @@ zones). See `extract_osm_layers.py`.
 
 ## Keeping traffic/weather/AQI data fresh
 
-`source_attribution.py`, `main.py`, and `live_history.py` all read their
-live CSVs (`traffic_log.csv`, `weather_current_log.csv`,
-`live_pollutants_log.csv`, `live_ground_aqi_log.csv`) **from inside
-`urbanair_backend/`**, but the collectors in `aqi_model/` write to
-`aqi_model/` instead. `python run_all.py` (see setup above) handles
-copying the latest files across automatically every 5 minutes — as long
-as it's running, you don't need to think about this. If you ever see
-stale numbers, check that Terminal 1 (`run_all.py`) is still alive.
+`source_attribution.py`, `main.py`, and `live_history.py` all read their live CSVs: `traffic_log.csv`, `weather_current_log.csv`, `live_pollutants_log.csv`, `live_ground_aqi_log.csv` ,from inside `urbanair_backend/`. But the collectors in `aqi_model/` write to `aqi_model/` instead. `run_all.py` handles copying the latest files across automatically every 5 minutes, so as long as it's running, you genuinely don't need to think about this. If numbers ever look stale, the first thing to check is whether Terminal 1 is still alive.
 
-No backend restart is needed either way — it re-reads the CSVs on every
-request.
+No backend restart is ever needed for this either way it just re-reads the CSVs fresh on every request.
 
-## Important note on Source Attribution / Enforcement
+## Why Source Attribution and Enforcement are rule-based, not ML
 
-These are **transparent rule-based engines**, not trained ML classifiers
-— there's no labeled "ground truth pollution source" dataset to train
-against (this is true of real-world source apportionment too; CPCB/SAFAR
-use similar rule + dispersion-model hybrids, not pure ML). Every weight
-in `source_attribution.py` is a documented assumption based on known
-atmospheric behavior (wind carries industrial/agricultural smoke, calm
-wind concentrates pollutants, stubble burning is seasonal Oct–Nov), not a
-fitted parameter. This is honest to present in your report/demo as
-"explainable rule-based reasoning" — arguably a stronger pitch for a
-government-facing tool than an opaque model would be.
+This was a deliberate choice, not a shortcut. There's no labeled "ground truth pollution source" dataset for Delhi NCR to train against and that's true of real-world source apportionment too. CPCB and SAFAR run similar rule-plus-dispersion-model hybrids themselves, not pure ML. Every weight in `source_attribution.py` is a documented assumption grounded in known atmospheric behavior like wind carries industrial and agricultural smoke, calm wind concentrates pollutants locally, stubble burning is seasonal to Oct–Nov which is not something fitted to data. It's worth saying this out loud in a demo as "explainable rule-based reasoning," honestly a stronger pitch for a government tool than a black box would be, since an official can actually audit the reasoning.
 
-## Area-wise granularity
+## Why 21 zones, not 5 cities
 
-Expanded from 7 points to Delhi's **13 officially designated pollution
-hotspots** (Anand Vihar, Ashok Vihar, Bawana, Dwarka, Jahangirpuri,
-Mundka, Narela, Okhla, Punjabi Bagh, R.K. Puram, Rohini, Vivek Vihar,
-Wazirpur — per Dept. of Environment, GNCTD, 2018) plus 3 iconic
-landmarks (Chandni Chowk, Red Fort, Connaught Place), for 21 points
-total. Source Attribution, Enforcement, GRAP Compliance, and What-if all
-work at this area level, not just city level. Coordinates are
-approximate locality centroids — cross-check against CPCB's official
-CAAQMS station list if you need monitoring-station-grade precision
-(link is in `source_attribution.py`'s comments).
+We expanded from the original 7 points to Delhi's 13 officially designated pollution hotspots: Anand Vihar, Ashok Vihar, Bawana, Dwarka, Jahangirpuri, Mundka, Narela, Okhla, Punjabi Bagh, R.K. Puram, Rohini, Vivek Vihar, Wazirpur, per the Dept. of Environment, GNCTD, 2018 — plus 3 landmark locations (Chandni Chowk, Red Fort, Connaught Place). That's 21 points total, and Source Attribution, Enforcement, GRAP Compliance, and What-if all operate at this level now, not just city level. The coordinates are approximate locality centroids, so if you need CAAQMS-station-grade precision, cross-check against CPCB's official station list, there's a link in `source_attribution.py`'s comments.
 
 ## Email alerts
 
-Already configured in the included `.env` — no setup needed. Restart the
-backend to pick it up. Without this, alert *preview* still works fully —
-only actual sending needs the SMTP credentials. `GET /api/alerts/status`
-tells you if it's configured.
+Already configured in the included `.env`, so there's nothing to set up — just restart the backend to pick it up. Without SMTP credentials, alert *preview* still works completely fine; only actually sending needs them. `GET /api/alerts/status` will tell you whether it's configured.
 
-**This is a demo-grade email sender, not a government notification
-system.** A real deployment would replace this with whatever official
-channel DPCC/MCD uses (SMS gateway, internal alert queue, WhatsApp
-Business API, etc.) — say this explicitly if asked in the demo, don't
-imply this is production-ready infrastructure.
+Worth being clear about this: it's a demo-grade email sender, not a government notification system. A real deployment would swap this out for whatever official channel DPCC/MCD actually uses SMS gateway, an internal alert queue, WhatsApp Business API, whatever it is. Say that explicitly if it comes up in a demo; don't let it come across as production-ready infrastructure, because it isn't.
 
-## What's left
+## What's still left
 
-- **Gemini Chat Assistant** — wrap the above endpoints' outputs as
-  context for a Gemini API call, answering questions like "why is AQI
-  increasing in Anand Vihar" using the already-computed attribution +
-  forecast data. This is the fastest remaining feature to build since
-  all the underlying data is ready.
+- **Gemini Chat Assistant** — Wrapping the existing endpoints' outputs as context for a Gemini call, so someone could ask something like "why is AQI increasing in Anand Vihar" and get an answer built from the attribution and forecast data we've already computed. This is genuinely the fastest thing left to build, since all the underlying data is already there.
 
-## Important honesty notes
+## Things worth saying honestly
 
-Also returned in every relevant API response's `caveats` / `disclaimer`
-field, and shown in the UI:
+These also show up in every relevant API response's `caveats` or `disclaimer` field, and in the UI itself:
 
-- Population figures (Green Cover) are district-density estimates, not
-  exact ward census counts — ward-level population data would need an
-  MCD ward shapefile + matching table, which isn't publicly easy to
-  source.
-- The "trees needed" number is illustrative (area deficit ÷ average
-  mature-tree canopy size), not a literal planting order — actual
-  reforestation planning needs species selection, site surveys, etc.
-- The 9 sq.m/person figure is a commonly cited planning reference in
-  urban literature, but isn't traceable to one single official WHO
-  document — treat it as a benchmark, not a regulatory mandate.
-- What-if Simulation is a rough **linear-scaling estimate** for scenario
-  comparison, not a validated dispersion-model simulation. Good for
-  "which lever matters more," not engineering-grade prediction.
-  Population-impact estimates aren't included since ward-level census
-  data isn't available — don't fabricate that number if asked; say it
-  needs that data source.
+- Green Cover's population figures are district-density estimates, not exact ward-level census counts. Real ward-level data would need an MCD ward shapefile plus a matching table, and that's not easy to get publicly.
+- The "trees needed" number is illustrative, area deficit divided by average mature-tree canopy size, not a literal planting order. Actual reforestation planning needs species selection, site surveys, all of that.
+- The 9 sq.m/person figure is a commonly cited planning reference in urban literature, but it doesn't trace back to one single official WHO document. Treat it as a benchmark, not a regulatory mandate.
+- What-if Simulation is a rough linear-scaling estimate for comparing scenarios, not a validated dispersion-model simulation. It's good for figuring out which lever matters more, not for engineering-grade prediction. We don't include population-impact estimates since we don't have ward-level census data and if someone asks for that number, don't make it up, just say it needs that data source.
 
-If you get access to real ward-level population data (Census or MCD),
-replace the `POPULATION_DENSITY` dict in `green_cover.py` with an actual
-per-area lookup — the rest of the pipeline doesn't need to change.
+If real ward-level population data ever becomes available (Census or MCD), the `POPULATION_DENSITY` dict in `green_cover.py` is the only thing that needs replacing and the rest of the pipeline stays as is.
 
 ## Regenerating the tree-cover raster
 
-`gee_tree_cover_extraction.js` (in `aqi_model/`) is the Google Earth
-Engine script used to generate `DelhiNCR_TreeCover_2021.tif`. Re-run it
-in the GEE Code Editor if you need a different year, radius, or region.
-
-
+`gee_tree_cover_extraction.js` (in `aqi_model/`) is the Google Earth Engine script that generated `DelhiNCR_TreeCover_2021.tif`. Re-run it in the GEE Code Editor if you need a different year, radius, or region.

@@ -51,6 +51,13 @@ MAX_MATCH_DISTANCE_KM = 12.0
 BOX_DEGREES = 0.15   # ~15km half-width box around each point to search for stations
 MAX_CANDIDATES_TO_TRY = 6  # how many nearest stations to test before giving up
 
+
+# Only Gurgaon gets a wider radius -- every other point still uses the
+# 12km/0.15deg defaults above, untouched.
+POINT_MAX_DISTANCE_OVERRIDE = {"Gurgaon": 20.0}
+
+
+
 ALL_POINTS = {
     "Delhi": (28.7041, 77.1025),
     "Faridabad": (28.4089, 77.3178),
@@ -105,11 +112,11 @@ FIELDNAMES = [
 ]
 
 
-def find_stations_in_box(point_lat, point_lon):
+def find_stations_in_box(point_lat, point_lon, box_degrees):
     """Returns raw station list from map/bounds for a box around the point.
     Each item looks like {"lat":.., "lon":.., "uid":.., "aqi":"-", "station":{"name":..}}."""
-    lat1, lat2 = point_lat - BOX_DEGREES, point_lat + BOX_DEGREES
-    lon1, lon2 = point_lon - BOX_DEGREES, point_lon + BOX_DEGREES
+    lat1, lat2 = point_lat - box_degrees, point_lat + box_degrees
+    lon1, lon2 = point_lon - box_degrees, point_lon + box_degrees
     resp = requests.get(
         BOUNDS_URL,
         params={"token": API_TOKEN, "latlng": f"{lat1},{lon1},{lat2},{lon2}"},
@@ -131,12 +138,15 @@ def fetch_by_uid(uid):
     return payload["data"]
 
 
-def find_nearest_verified_station(point_lat, point_lon):
-    """Finds every WAQI station within BOX_DEGREES of this point, sorts by
-    real distance, then tries them nearest-first via feed/@uid (the only
-    call that reliably confirms an actual numeric AQI) until one works or
-    we run out of nearby candidates within MAX_MATCH_DISTANCE_KM."""
-    stations = find_stations_in_box(point_lat, point_lon)
+def find_nearest_verified_station(point_lat, point_lon, point_name=None):
+    """Finds every WAQI station near this point, sorts by real distance,
+    then tries them nearest-first via feed/@uid until one works. Gurgaon
+    uses a wider radius (POINT_MAX_DISTANCE_OVERRIDE) -- every other
+    point still uses the 12km/0.15deg defaults, unchanged."""
+    max_dist = POINT_MAX_DISTANCE_OVERRIDE.get(point_name, MAX_MATCH_DISTANCE_KM)
+    box_degrees = max(BOX_DEGREES, max_dist / 100.0)
+
+    stations = find_stations_in_box(point_lat, point_lon, box_degrees)
 
     candidates = []
     for s in stations:
@@ -146,7 +156,7 @@ def find_nearest_verified_station(point_lat, point_lon):
         except (KeyError, TypeError, ValueError):
             continue
         dist = haversine_km(point_lat, point_lon, slat, slon)
-        if dist <= MAX_MATCH_DISTANCE_KM:
+        if dist <= max_dist:
             candidates.append((dist, uid, s.get("station", {}).get("name", "")))
     candidates.sort(key=lambda c: c[0])
 
@@ -181,7 +191,7 @@ def run_once():
 
         for point, (point_lat, point_lon) in ALL_POINTS.items():
             try:
-                match = find_nearest_verified_station(point_lat, point_lon)
+                match = find_nearest_verified_station(point_lat, point_lon, point)
                 if match is None:
                     print(f"  [warn] {point}: no verified station within {MAX_MATCH_DISTANCE_KM} km -- skipped, not faked")
                     continue

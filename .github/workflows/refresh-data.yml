@@ -1,0 +1,44 @@
+name: Refresh Live AQI Data
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        working-directory: aqi_model
+        run: pip install -r requirements.txt
+
+      - name: Run collectors
+        working-directory: aqi_model
+        env:
+          WAQI_API_TOKEN: ${{ secrets.WAQI_API_TOKEN }}
+          OWM_API_KEY: ${{ secrets.OWM_API_KEY }}
+          TOMTOM_API_KEY: ${{ secrets.TOMTOM_API_KEY }}
+        run: |
+          python waqi_aqi_collector.py
+          python air_pollution_collector.py
+          python traffic_collector.py
+          python weather_collector.py
+
+      - name: Sync CSVs into backend folder
+        run: cp aqi_model/*.csv urbanair_backend/ 2>/dev/null || true
+
+      - name: Commit and push if data changed
+        run: |
+          git config user.name "aqi-refresh-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add aqi_model/*.csv urbanair_backend/*.csv
+          git diff --cached --quiet || git commit -m "Auto-refresh live AQI data"
+          git push
+          
